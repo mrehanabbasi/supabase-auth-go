@@ -255,8 +255,10 @@ type AdminDeleteSSOProviderResponse struct {
 	SSOProvider
 }
 
-type Provider string
-type FlowType string
+type (
+	Provider string
+	FlowType string
+)
 
 const (
 	ProviderApple     Provider = "apple"
@@ -284,10 +286,10 @@ const (
 )
 
 type AuthorizeRequest struct {
-	Provider Provider
+	Provider   Provider
 	RedirectTo string
-	FlowType FlowType
-	Scopes   string
+	FlowType   FlowType
+	Scopes     string
 }
 
 type AuthorizeResponse struct {

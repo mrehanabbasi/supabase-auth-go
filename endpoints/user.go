@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/supabase-community/auth-go/types"
+	"github.com/mrehanabbasi/supabase-auth-go/types"
 )
 
 var userPath = "/user"

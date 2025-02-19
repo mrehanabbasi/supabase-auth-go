@@ -4,12 +4,10 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/supabase-community/auth-go/endpoints"
+	"github.com/mrehanabbasi/supabase-auth-go/endpoints"
 )
 
-var (
-	ErrInvalidProjectReference = errors.New("cannot create auth client: invalid project reference")
-)
+var ErrInvalidProjectReference = errors.New("cannot create auth client: invalid project reference")
 
 var _ Client = &client{}
 
@@ -46,7 +44,7 @@ func (c client) WithToken(token string) Client {
 	}
 }
 
-func (c client) WithClient(httpClient http.Client) Client {
+func (c client) WithClient(httpClient *http.Client) Client {
 	return &client{
 		Client: c.Client.WithClient(httpClient),
 	}

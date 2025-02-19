@@ -11,10 +11,9 @@ import (
 
 	backoff "github.com/cenkalti/backoff/v4"
 	jwt "github.com/golang-jwt/jwt/v4"
+	supaAuth "github.com/mrehanabbasi/supabase-auth-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/supabase-community/auth-go"
 )
 
 const (
@@ -25,9 +24,9 @@ const (
 
 var (
 	// Global clients are used for all tests in this package.
-	client               auth.Client
-	autoconfirmClient    auth.Client
-	signupDisabledClient auth.Client
+	client               supaAuth.Client
+	autoconfirmClient    supaAuth.Client
+	signupDisabledClient supaAuth.Client
 
 	// Used to validate UUIDs.
 	uuidRegex = regexp.MustCompile(`^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`)
@@ -74,16 +73,16 @@ func adminToken() string {
 	return token
 }
 
-func withAdmin(c auth.Client) auth.Client {
+func withAdmin(c supaAuth.Client) supaAuth.Client {
 	return c.WithToken(adminToken())
 }
 
 func TestMain(m *testing.M) {
 	// Please refer to ./setup/docker-compose.yaml and ./README.md for more info
 	// on this test set up.
-	client = auth.New(projectReference, apiKey).WithCustomAuthURL("http://localhost:9999")
-	autoconfirmClient = auth.New(projectReference, apiKey).WithCustomAuthURL("http://localhost:9998")
-	signupDisabledClient = auth.New(projectReference, apiKey).WithCustomAuthURL("http://localhost:9997")
+	client = supaAuth.New(projectReference, apiKey).WithCustomAuthURL("http://localhost:9999")
+	autoconfirmClient = supaAuth.New(projectReference, apiKey).WithCustomAuthURL("http://localhost:9998")
+	signupDisabledClient = supaAuth.New(projectReference, apiKey).WithCustomAuthURL("http://localhost:9997")
 
 	// Ensure the server is ready before running tests.
 	err := backoff.Retry(
@@ -129,13 +128,13 @@ func TestWithClient(t *testing.T) {
 	assert := assert.New(t)
 	require := require.New(t)
 
-	c := auth.New(projectReference, apiKey).WithCustomAuthURL("http://localhost:9999")
+	c := supaAuth.New(projectReference, apiKey).WithCustomAuthURL("http://localhost:9999")
 	h, err := c.HealthCheck()
 	require.NoError(err)
 	assert.Equal("GoTrue", h.Name)
 
 	roundTripper := &customRoundTripper{}
-	c = c.WithClient(http.Client{
+	c = c.WithClient(&http.Client{
 		Transport: roundTripper,
 	})
 	h, err = c.HealthCheck()

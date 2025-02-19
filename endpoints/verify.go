@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/supabase-community/auth-go/types"
+	"github.com/mrehanabbasi/supabase-auth-go/types"
 )
 
 const verifyPath = "/verify"

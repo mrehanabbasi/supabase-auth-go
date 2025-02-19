@@ -3,7 +3,7 @@ package auth
 import (
 	"net/http"
 
-	"github.com/supabase-community/auth-go/types"
+	"github.com/mrehanabbasi/supabase-auth-go/types"
 )
 
 // Create a new client using auth.New, then you can call the methods below.
@@ -11,7 +11,6 @@ import (
 // Some methods require bearer token authentication. To set the bearer token,
 // use the WithToken(token) method.
 type Client interface {
-
 	// Options:
 
 	// By default, the client will use the supabase project reference and assume
@@ -40,7 +39,7 @@ type Client interface {
 	//
 	// It returns a copy of the client, so only requests made with the returned
 	// copy will use the new HTTP client.
-	WithClient(client http.Client) Client
+	WithClient(client *http.Client) Client
 
 	// Endpoints:
 

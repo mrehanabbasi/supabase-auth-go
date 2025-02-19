@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/supabase-community/auth-go/types"
+	"github.com/mrehanabbasi/supabase-auth-go/types"
 )
 
 // GET /admin/users/{user_id}/factors

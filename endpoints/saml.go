@@ -7,8 +7,10 @@ import (
 	"net/url"
 )
 
-const samlMetadataPath = "/sso/saml/metadata"
-const samlACSPath = "/sso/saml/acs"
+const (
+	samlMetadataPath = "/sso/saml/metadata"
+	samlACSPath      = "/sso/saml/acs"
+)
 
 // GET /sso/saml/metadata
 //
