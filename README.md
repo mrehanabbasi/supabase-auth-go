@@ -1,8 +1,8 @@
 # auth-go
 
 ![example branch parameter](https://github.com/mrehanabbasi/supabase-auth-go/actions/workflows/test.yaml/badge.svg?branch=main)
-[![codecov](https://codecov.io/gh/supabase-community/auth-go/branch/main/graph/badge.svg?token=JQQJKETMRX)](https://codecov.io/gh/supabase-community/auth-go)
-![GitHub](https://img.shields.io/github/license/supabase-community/auth-go)
+[![codecov](https://codecov.io/gh/mrehanabbasi/supabase-auth-go/branch/main/graph/badge.svg?token=JQQJKETMRX)](https://codecov.io/gh/mrehanabbasi/supabase-auth-go)
+![GitHub](https://img.shields.io/github/license/mrehanabbasi/supabase-auth-go)
 [![Go Reference](https://pkg.go.dev/badge/github.com/mrehanabbasi/supabase-auth-go.svg)](https://pkg.go.dev/github.com/mrehanabbasi/supabase-auth-go)
 
 A Golang client library for the [Supabase Auth](https://github.com/supabase/auth) API.
