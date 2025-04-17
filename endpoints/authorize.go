@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
@@ -40,8 +41,8 @@ func generatePKCEParams() (*types.PKCEParams, error) {
 // If successful, the server returns a redirect response. This method will not
 // follow the redirect, but instead returns the URL the client was told to
 // redirect to.
-func (c *Client) Authorize(req types.AuthorizeRequest) (*types.AuthorizeResponse, error) {
-	r, err := c.newRequest(authorizePath, http.MethodGet, nil)
+func (c *Client) Authorize(ctx context.Context, req types.AuthorizeRequest) (*types.AuthorizeResponse, error) {
+	r, err := c.newRequest(ctx, authorizePath, http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,13 +16,13 @@ const adminUsersPath = "/admin/users"
 // POST /admin/users
 //
 // Creates the user based on the user_id specified.
-func (c *Client) AdminCreateUser(req types.AdminCreateUserRequest) (*types.AdminCreateUserResponse, error) {
+func (c *Client) AdminCreateUser(ctx context.Context, req types.AdminCreateUserRequest) (*types.AdminCreateUserResponse, error) {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
 
-	r, err := c.newRequest(adminUsersPath, http.MethodPost, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, adminUsersPath, http.MethodPost, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +53,8 @@ func (c *Client) AdminCreateUser(req types.AdminCreateUserRequest) (*types.Admin
 // GET /admin/users
 //
 // Get a list of users.
-func (c *Client) AdminListUsers() (*types.AdminListUsersResponse, error) {
-	r, err := c.newRequest(adminUsersPath, http.MethodGet, nil)
+func (c *Client) AdminListUsers(ctx context.Context) (*types.AdminListUsersResponse, error) {
+	r, err := c.newRequest(ctx, adminUsersPath, http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -84,9 +85,9 @@ func (c *Client) AdminListUsers() (*types.AdminListUsersResponse, error) {
 // GET /admin/users/{user_id}
 //
 // Get a user by their user_id.
-func (c *Client) AdminGetUser(req types.AdminGetUserRequest) (*types.AdminGetUserResponse, error) {
+func (c *Client) AdminGetUser(ctx context.Context, req types.AdminGetUserRequest) (*types.AdminGetUserResponse, error) {
 	path := fmt.Sprintf("%s/%s", adminUsersPath, req.UserID)
-	r, err := c.newRequest(path, http.MethodGet, nil)
+	r, err := c.newRequest(ctx, path, http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -117,14 +118,14 @@ func (c *Client) AdminGetUser(req types.AdminGetUserRequest) (*types.AdminGetUse
 // PUT /admin/users/{user_id}
 //
 // Update a user by their user_id.
-func (c *Client) AdminUpdateUser(req types.AdminUpdateUserRequest) (*types.AdminUpdateUserResponse, error) {
+func (c *Client) AdminUpdateUser(ctx context.Context, req types.AdminUpdateUserRequest) (*types.AdminUpdateUserResponse, error) {
 	path := fmt.Sprintf("%s/%s", adminUsersPath, req.UserID)
 	body, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
 
-	r, err := c.newRequest(path, http.MethodPut, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, path, http.MethodPut, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}
@@ -155,9 +156,9 @@ func (c *Client) AdminUpdateUser(req types.AdminUpdateUserRequest) (*types.Admin
 // DELETE /admin/users/{user_id}
 //
 // Delete a user by their user_id.
-func (c *Client) AdminDeleteUser(req types.AdminDeleteUserRequest) error {
+func (c *Client) AdminDeleteUser(ctx context.Context, req types.AdminDeleteUserRequest) error {
 	path := fmt.Sprintf("%s/%s", adminUsersPath, req.UserID)
-	r, err := c.newRequest(path, http.MethodDelete, nil)
+	r, err := c.newRequest(ctx, path, http.MethodDelete, nil)
 	if err != nil {
 		return err
 	}

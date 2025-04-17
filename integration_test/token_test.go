@@ -20,13 +20,13 @@ func TestToken(t *testing.T) {
 	email := randomEmail()
 	password := "password"
 
-	_, err := client.Signup(types.SignupRequest{
+	_, err := client.Signup(ctx, types.SignupRequest{
 		Email:    email,
 		Password: password,
 	})
 	require.NoError(err)
 
-	token, err := client.Token(types.TokenRequest{
+	token, err := client.Token(ctx, types.TokenRequest{
 		GrantType: "password",
 		Email:     email,
 		Password:  password,
@@ -40,7 +40,7 @@ func TestToken(t *testing.T) {
 	assert.InDelta(time.Now().Add(3600*time.Second).Unix(), token.ExpiresAt, float64(time.Second))
 
 	// Signin with email convenience method
-	token, err = client.SignInWithEmailPassword(email, password)
+	token, err = client.SignInWithEmailPassword(ctx, email, password)
 	require.NoError(err)
 	assert.Equal(email, token.User.Email)
 	assert.NotEmpty(token.AccessToken)
@@ -53,13 +53,13 @@ func TestToken(t *testing.T) {
 	phone := randomPhoneNumber()
 	password = "password"
 
-	_, err = client.Signup(types.SignupRequest{
+	_, err = client.Signup(ctx, types.SignupRequest{
 		Phone:    phone,
 		Password: password,
 	})
 	require.NoError(err)
 
-	token, err = client.Token(types.TokenRequest{
+	token, err = client.Token(ctx, types.TokenRequest{
 		GrantType: "password",
 		Phone:     phone,
 		Password:  password,
@@ -73,7 +73,7 @@ func TestToken(t *testing.T) {
 	assert.InDelta(time.Now().Add(3600*time.Second).Unix(), token.ExpiresAt, float64(time.Second))
 
 	// Signin with phone convenience method
-	token, err = client.SignInWithPhonePassword(phone, password)
+	token, err = client.SignInWithPhonePassword(ctx, phone, password)
 	require.NoError(err)
 	assert.Equal(phone, token.User.Phone)
 	assert.NotEmpty(token.AccessToken)
@@ -83,7 +83,7 @@ func TestToken(t *testing.T) {
 	assert.InDelta(time.Now().Add(3600*time.Second).Unix(), token.ExpiresAt, float64(time.Second))
 
 	// Incorrect password
-	_, err = client.Token(types.TokenRequest{
+	_, err = client.Token(ctx, types.TokenRequest{
 		GrantType: "password",
 		Email:     email,
 		Password:  "wrong",
@@ -92,14 +92,14 @@ func TestToken(t *testing.T) {
 
 	// Test login with refresh token
 	email = randomEmail()
-	user, err := client.Signup(types.SignupRequest{
+	user, err := client.Signup(ctx, types.SignupRequest{
 		Email:    email,
 		Password: "password",
 	})
 	require.NoError(err)
 	require.NotEmpty(user.RefreshToken)
 
-	token, err = client.Token(types.TokenRequest{
+	token, err = client.Token(ctx, types.TokenRequest{
 		GrantType:    "refresh_token",
 		RefreshToken: user.RefreshToken,
 	})
@@ -112,7 +112,7 @@ func TestToken(t *testing.T) {
 	assert.InDelta(time.Now().Add(3600*time.Second).Unix(), token.ExpiresAt, float64(time.Second))
 
 	// Refresh token convenience method
-	token, err = client.RefreshToken(token.RefreshToken)
+	token, err = client.RefreshToken(ctx, token.RefreshToken)
 	require.NoError(err)
 	assert.Equal(email, token.User.Email)
 	assert.NotEmpty(token.AccessToken)
@@ -160,7 +160,7 @@ func TestToken(t *testing.T) {
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			_, err := client.Token(test)
+			_, err := client.Token(ctx, test)
 			require.Error(err)
 		})
 	}

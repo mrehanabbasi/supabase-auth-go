@@ -19,14 +19,14 @@ func TestUser(t *testing.T) {
 	// Create user
 	email := randomEmail()
 	password := "password"
-	session, err := client.Signup(types.SignupRequest{
+	session, err := client.Signup(ctx, types.SignupRequest{
 		Email:    email,
 		Password: password,
 	})
 	require.NoError(err)
 
 	// Get user
-	user, err := client.WithToken(session.AccessToken).GetUser()
+	user, err := client.WithToken(session.AccessToken).GetUser(ctx)
 	require.NoError(err)
 	assert.NotEqual(user.ID, uuid.Nil)
 	assert.Equal(email, user.Email)
@@ -34,7 +34,7 @@ func TestUser(t *testing.T) {
 	assert.InDelta(time.Now().Unix(), user.UpdatedAt.Unix(), float64(time.Second))
 
 	// Modify user metadata
-	updateResp, err := client.WithToken(session.AccessToken).UpdateUser(types.UpdateUserRequest{
+	updateResp, err := client.WithToken(session.AccessToken).UpdateUser(ctx, types.UpdateUserRequest{
 		Data: map[string]interface{}{
 			"foo": "bar",
 		},

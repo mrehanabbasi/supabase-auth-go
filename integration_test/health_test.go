@@ -3,9 +3,10 @@ package integration_test
 import (
 	"testing"
 
-	supaAuth "github.com/mrehanabbasi/supabase-auth-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	supaAuth "github.com/mrehanabbasi/supabase-auth-go"
 )
 
 func TestHealth(t *testing.T) {
@@ -13,7 +14,7 @@ func TestHealth(t *testing.T) {
 	require := require.New(t)
 
 	client := supaAuth.New(projectReference, apiKey).WithCustomAuthURL("http://localhost:9999")
-	health, err := client.HealthCheck()
+	health, err := client.HealthCheck(ctx)
 	require.NoError(err)
 	assert.Equal(health.Name, "GoTrue")
 }

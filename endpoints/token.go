@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,8 +16,8 @@ const tokenPath = "/token"
 // Sign in with email and password
 //
 // This is a convenience method that calls Token with the password grant type
-func (c *Client) SignInWithEmailPassword(email, password string) (*types.TokenResponse, error) {
-	return c.Token(types.TokenRequest{
+func (c *Client) SignInWithEmailPassword(ctx context.Context, email, password string) (*types.TokenResponse, error) {
+	return c.Token(ctx, types.TokenRequest{
 		GrantType: "password",
 		Email:     email,
 		Password:  password,
@@ -26,8 +27,8 @@ func (c *Client) SignInWithEmailPassword(email, password string) (*types.TokenRe
 // Sign in with phone and password
 //
 // This is a convenience method that calls Token with the password grant type
-func (c *Client) SignInWithPhonePassword(phone, password string) (*types.TokenResponse, error) {
-	return c.Token(types.TokenRequest{
+func (c *Client) SignInWithPhonePassword(ctx context.Context, phone, password string) (*types.TokenResponse, error) {
+	return c.Token(ctx, types.TokenRequest{
 		GrantType: "password",
 		Phone:     phone,
 		Password:  password,
@@ -37,8 +38,8 @@ func (c *Client) SignInWithPhonePassword(phone, password string) (*types.TokenRe
 // Sign in with refresh token
 //
 // This is a convenience method that calls Token with the refresh_token grant type
-func (c *Client) RefreshToken(refreshToken string) (*types.TokenResponse, error) {
-	return c.Token(types.TokenRequest{
+func (c *Client) RefreshToken(ctx context.Context, refreshToken string) (*types.TokenResponse, error) {
+	return c.Token(ctx, types.TokenRequest{
 		GrantType:    "refresh_token",
 		RefreshToken: refreshToken,
 	})
@@ -48,7 +49,7 @@ func (c *Client) RefreshToken(refreshToken string) (*types.TokenResponse, error)
 //
 // This is an OAuth2 endpoint that currently implements the password,
 // refresh_token, and PKCE grant types
-func (c *Client) Token(req types.TokenRequest) (*types.TokenResponse, error) {
+func (c *Client) Token(ctx context.Context, req types.TokenRequest) (*types.TokenResponse, error) {
 	switch req.GrantType {
 	case "password":
 		if (req.Email == "" && req.Phone == "") || req.Password == "" || req.RefreshToken != "" {
@@ -70,7 +71,7 @@ func (c *Client) Token(req types.TokenRequest) (*types.TokenResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	r, err := c.newRequest(tokenPath+"?grant_type="+req.GrantType, http.MethodPost, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, tokenPath+"?grant_type="+req.GrantType, http.MethodPost, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}

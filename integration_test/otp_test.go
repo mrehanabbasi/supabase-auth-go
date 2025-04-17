@@ -13,14 +13,14 @@ func TestOTP(t *testing.T) {
 
 	// Cannot create user from OTP if CreateUser is false
 	email := randomEmail()
-	err := client.OTP(types.OTPRequest{
+	err := client.OTP(ctx, types.OTPRequest{
 		Email:      email,
 		CreateUser: false,
 	})
 	assert.Error(err)
 
 	// Create user from OTP
-	err = client.OTP(types.OTPRequest{
+	err = client.OTP(ctx, types.OTPRequest{
 		Email:      email,
 		CreateUser: true,
 	})
@@ -28,7 +28,7 @@ func TestOTP(t *testing.T) {
 
 	// Create user with SMS OTP, but SMS disabled
 	phone := randomPhoneNumber()
-	err = client.OTP(types.OTPRequest{
+	err = client.OTP(ctx, types.OTPRequest{
 		Phone:      phone,
 		CreateUser: true,
 	})

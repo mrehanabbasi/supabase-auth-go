@@ -18,11 +18,11 @@ func TestFactors(t *testing.T) {
 	client := autoconfirmClient
 
 	// Invalid request
-	_, err := client.EnrollFactor(types.EnrollFactorRequest{})
+	_, err := client.EnrollFactor(ctx, types.EnrollFactorRequest{})
 	assert.Error(err)
 
 	// No user token
-	_, err = client.EnrollFactor(types.EnrollFactorRequest{
+	_, err = client.EnrollFactor(ctx, types.EnrollFactorRequest{
 		FriendlyName: "test",
 		FactorType:   types.FactorTypeTOTP,
 		Issuer:       "test.com",
@@ -31,7 +31,7 @@ func TestFactors(t *testing.T) {
 
 	// Create a new user
 	email := randomEmail()
-	session, err := client.Signup(types.SignupRequest{
+	session, err := client.Signup(ctx, types.SignupRequest{
 		Email:    email,
 		Password: "password",
 	})
@@ -40,7 +40,7 @@ func TestFactors(t *testing.T) {
 	client = client.WithToken(session.AccessToken)
 
 	// Enroll factor for client
-	factorResp, err := client.EnrollFactor(types.EnrollFactorRequest{
+	factorResp, err := client.EnrollFactor(ctx, types.EnrollFactorRequest{
 		FriendlyName: "Test Factor",
 		FactorType:   types.FactorTypeTOTP,
 		Issuer:       "mine.com",
@@ -53,17 +53,17 @@ func TestFactors(t *testing.T) {
 	assert.NotEmpty(factorResp.TOTP.URI)
 
 	// Create challenge with invalid request
-	_, err = client.ChallengeFactor(types.ChallengeFactorRequest{})
+	_, err = client.ChallengeFactor(ctx, types.ChallengeFactorRequest{})
 	assert.Error(err)
 
 	// Create challenge with invalid factor ID
-	_, err = client.ChallengeFactor(types.ChallengeFactorRequest{
+	_, err = client.ChallengeFactor(ctx, types.ChallengeFactorRequest{
 		FactorID: uuid.Nil,
 	})
 	assert.Error(err)
 
 	// Create valid challenge
-	challengeResp, err := client.ChallengeFactor(types.ChallengeFactorRequest{
+	challengeResp, err := client.ChallengeFactor(ctx, types.ChallengeFactorRequest{
 		FactorID: factorResp.ID,
 	})
 	require.NoError(err)
@@ -71,11 +71,11 @@ func TestFactors(t *testing.T) {
 	assert.Greater(challengeResp.ExpiresAt, time.Now())
 
 	// Verify challenge with invalid request
-	_, err = client.VerifyFactor(types.VerifyFactorRequest{})
+	_, err = client.VerifyFactor(ctx, types.VerifyFactorRequest{})
 	assert.Error(err)
 
 	// Verify challenge with invalid factor ID
-	_, err = client.VerifyFactor(types.VerifyFactorRequest{
+	_, err = client.VerifyFactor(ctx, types.VerifyFactorRequest{
 		FactorID:    uuid.Nil,
 		ChallengeID: challengeResp.ID,
 		Code:        "blah",
@@ -83,7 +83,7 @@ func TestFactors(t *testing.T) {
 	assert.Error(err)
 
 	// Verify challenge with invalid challenge ID
-	_, err = client.VerifyFactor(types.VerifyFactorRequest{
+	_, err = client.VerifyFactor(ctx, types.VerifyFactorRequest{
 		FactorID:    factorResp.ID,
 		ChallengeID: uuid.Nil,
 		Code:        "blah",
@@ -91,7 +91,7 @@ func TestFactors(t *testing.T) {
 	assert.Error(err)
 
 	// Verify challenge with invalid code
-	_, err = client.VerifyFactor(types.VerifyFactorRequest{
+	_, err = client.VerifyFactor(ctx, types.VerifyFactorRequest{
 		FactorID:    factorResp.ID,
 		ChallengeID: challengeResp.ID,
 		Code:        "blah",
@@ -102,11 +102,11 @@ func TestFactors(t *testing.T) {
 	// factor.
 
 	// Delete factor with invalid request
-	_, err = client.UnenrollFactor(types.UnenrollFactorRequest{})
+	_, err = client.UnenrollFactor(ctx, types.UnenrollFactorRequest{})
 	assert.Error(err)
 
 	// Delete factor
-	unenrollResp, err := client.UnenrollFactor(types.UnenrollFactorRequest{
+	unenrollResp, err := client.UnenrollFactor(ctx, types.UnenrollFactorRequest{
 		FactorID: factorResp.ID,
 	})
 	require.NoError(err)

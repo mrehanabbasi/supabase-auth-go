@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,8 +15,8 @@ var healthPath = "/health"
 // GET /health
 //
 // Check the health of the Auth server.
-func (c *Client) HealthCheck() (*types.HealthCheckResponse, error) {
-	r, err := c.newRequest(healthPath, http.MethodGet, nil)
+func (c *Client) HealthCheck(ctx context.Context) (*types.HealthCheckResponse, error) {
+	r, err := c.newRequest(ctx, healthPath, http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}

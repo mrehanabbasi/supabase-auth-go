@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/mrehanabbasi/supabase-auth-go/types"
@@ -54,7 +55,7 @@ type Client interface {
 	// per request. This can be configured with PerPage in the request. The response
 	// will include the total number of results, as well as the total number of pages
 	// and, if not already on the last page, the next page number.
-	AdminAudit(req types.AdminAuditRequest) (*types.AdminAuditResponse, error)
+	AdminAudit(ctx context.Context, req types.AdminAuditRequest) (*types.AdminAuditResponse, error)
 
 	// POST /admin/generate_link
 	//
@@ -64,66 +65,66 @@ type Client interface {
 	// which the corresponding token is generated).
 	//
 	// Requires admin token.
-	AdminGenerateLink(req types.AdminGenerateLinkRequest) (*types.AdminGenerateLinkResponse, error)
+	AdminGenerateLink(ctx context.Context, req types.AdminGenerateLinkRequest) (*types.AdminGenerateLinkResponse, error)
 
 	// GET /admin/sso/providers
 	//
 	// Get a list of all SAML SSO Identity Providers in the system.
-	AdminListSSOProviders() (*types.AdminListSSOProvidersResponse, error)
+	AdminListSSOProviders(ctx context.Context) (*types.AdminListSSOProvidersResponse, error)
 	// POST /admin/sso/providers
 	//
 	// Create a new SAML SSO Identity Provider.
-	AdminCreateSSOProvider(req types.AdminCreateSSOProviderRequest) (*types.AdminCreateSSOProviderResponse, error)
+	AdminCreateSSOProvider(ctx context.Context, req types.AdminCreateSSOProviderRequest) (*types.AdminCreateSSOProviderResponse, error)
 	// GET /admin/sso/providers/{idp_id}
 	//
 	// Get a SAML SSO Identity Provider by ID.
-	AdminGetSSOProvider(req types.AdminGetSSOProviderRequest) (*types.AdminGetSSOProviderResponse, error)
+	AdminGetSSOProvider(ctx context.Context, req types.AdminGetSSOProviderRequest) (*types.AdminGetSSOProviderResponse, error)
 	// PUT /admin/sso/providers/{idp_id}
 	//
 	// Update a SAML SSO Identity Provider by ID.
-	AdminUpdateSSOProvider(req types.AdminUpdateSSOProviderRequest) (*types.AdminUpdateSSOProviderResponse, error)
+	AdminUpdateSSOProvider(ctx context.Context, req types.AdminUpdateSSOProviderRequest) (*types.AdminUpdateSSOProviderResponse, error)
 	// DELETE /admin/sso/providers/{idp_id}
 	//
 	// Delete a SAML SSO Identity Provider by ID.
-	AdminDeleteSSOProvider(req types.AdminDeleteSSOProviderRequest) (*types.AdminDeleteSSOProviderResponse, error)
+	AdminDeleteSSOProvider(ctx context.Context, req types.AdminDeleteSSOProviderRequest) (*types.AdminDeleteSSOProviderResponse, error)
 
 	// POST /admin/users
 	//
 	// Creates the user based on the user_id specified.
 	//
 	// Requires admin token.
-	AdminCreateUser(req types.AdminCreateUserRequest) (*types.AdminCreateUserResponse, error)
+	AdminCreateUser(ctx context.Context, req types.AdminCreateUserRequest) (*types.AdminCreateUserResponse, error)
 	// GET /admin/users
 	//
 	// Get a list of users.
 	//
 	// Requires admin token.
-	AdminListUsers() (*types.AdminListUsersResponse, error)
+	AdminListUsers(ctx context.Context) (*types.AdminListUsersResponse, error)
 	// GET /admin/users/{user_id}
 	//
 	// Get a user by their user_id.
-	AdminGetUser(req types.AdminGetUserRequest) (*types.AdminGetUserResponse, error)
+	AdminGetUser(ctx context.Context, req types.AdminGetUserRequest) (*types.AdminGetUserResponse, error)
 	// PUT /admin/users/{user_id}
 	//
 	// Update a user by their user_id.
-	AdminUpdateUser(req types.AdminUpdateUserRequest) (*types.AdminUpdateUserResponse, error)
+	AdminUpdateUser(ctx context.Context, req types.AdminUpdateUserRequest) (*types.AdminUpdateUserResponse, error)
 	// DELETE /admin/users/{user_id}
 	//
 	// Delete a user by their user_id.
-	AdminDeleteUser(req types.AdminDeleteUserRequest) error
+	AdminDeleteUser(ctx context.Context, req types.AdminDeleteUserRequest) error
 
 	// GET /admin/users/{user_id}/factors
 	//
 	// Get a list of factors for a user.
-	AdminListUserFactors(req types.AdminListUserFactorsRequest) (*types.AdminListUserFactorsResponse, error)
+	AdminListUserFactors(ctx context.Context, req types.AdminListUserFactorsRequest) (*types.AdminListUserFactorsResponse, error)
 	// PUT /admin/users/{user_id}/factors/{factor_id}
 	//
 	// Update a factor for a user.
-	AdminUpdateUserFactor(req types.AdminUpdateUserFactorRequest) (*types.AdminUpdateUserFactorResponse, error)
+	AdminUpdateUserFactor(ctx context.Context, req types.AdminUpdateUserFactorRequest) (*types.AdminUpdateUserFactorResponse, error)
 	// DELETE /admin/users/{user_id}/factors/{factor_id}
 	//
 	// Delete a factor for a user.
-	AdminDeleteUserFactor(req types.AdminDeleteUserFactorRequest) error
+	AdminDeleteUserFactor(ctx context.Context, req types.AdminDeleteUserFactorRequest) error
 
 	// GET /authorize
 	//
@@ -135,24 +136,24 @@ type Client interface {
 	// If successful, the server returns a redirect response. This method will not
 	// follow the redirect, but instead returns the URL the client was told to
 	// redirect to.
-	Authorize(req types.AuthorizeRequest) (*types.AuthorizeResponse, error)
+	Authorize(ctx context.Context, req types.AuthorizeRequest) (*types.AuthorizeResponse, error)
 
 	// POST /factors
 	//
 	// Enroll a new factor.
-	EnrollFactor(req types.EnrollFactorRequest) (*types.EnrollFactorResponse, error)
+	EnrollFactor(ctx context.Context, req types.EnrollFactorRequest) (*types.EnrollFactorResponse, error)
 	// POST /factors/{factor_id}/challenge
 	//
 	// Challenge a factor.
-	ChallengeFactor(req types.ChallengeFactorRequest) (*types.ChallengeFactorResponse, error)
+	ChallengeFactor(ctx context.Context, req types.ChallengeFactorRequest) (*types.ChallengeFactorResponse, error)
 	// POST /factors/{factor_id}/verify
 	//
 	// Verify the challenge for an enrolled factor.
-	VerifyFactor(req types.VerifyFactorRequest) (*types.VerifyFactorResponse, error)
+	VerifyFactor(ctx context.Context, req types.VerifyFactorRequest) (*types.VerifyFactorResponse, error)
 	// DELETE /factors/{factor_id}
 	//
 	// Unenroll an enrolled factor.
-	UnenrollFactor(req types.UnenrollFactorRequest) (*types.UnenrollFactorResponse, error)
+	UnenrollFactor(ctx context.Context, req types.UnenrollFactorRequest) (*types.UnenrollFactorResponse, error)
 
 	// GET/POST /callback
 	//
@@ -164,14 +165,14 @@ type Client interface {
 	// GET /health
 	//
 	// Check the health of the Auth server.
-	HealthCheck() (*types.HealthCheckResponse, error)
+	HealthCheck(ctx context.Context) (*types.HealthCheckResponse, error)
 
 	// POST /invite
 	//
 	// Invites a new user with an email.
 	//
 	// Requires service_role or admin token.
-	Invite(req types.InviteRequest) (*types.InviteResponse, error)
+	Invite(ctx context.Context, req types.InviteRequest) (*types.InviteResponse, error)
 
 	// POST /logout
 	//
@@ -179,7 +180,7 @@ type Client interface {
 	//
 	// This will revoke all refresh tokens for the user. Remember that the JWT
 	// tokens will still be valid for stateless auth until they expires.
-	Logout() error
+	Logout(ctx context.Context) error
 
 	// POST /magiclink
 	//
@@ -190,21 +191,21 @@ type Client interface {
 	// address which they can use to redeem an access_token.
 	//
 	// By default Magic Links can only be sent once every 60 seconds.
-	Magiclink(req types.MagiclinkRequest) error
+	Magiclink(ctx context.Context, req types.MagiclinkRequest) error
 	// POST /otp
 	// One-Time-Password. Will deliver a magiclink or SMS OTP to the user depending
 	// on whether the request contains an email or phone key.
 	//
 	// If CreateUser is true, the user will be automatically signed up if the user
 	// doesn't exist.
-	OTP(req types.OTPRequest) error
+	OTP(ctx context.Context, req types.OTPRequest) error
 
 	// GET /reauthenticate
 	//
 	// Sends a nonce to the user's email (preferred) or phone. This endpoint
 	// requires the user to be logged in / authenticated first. The user needs to
 	// have either an email or phone number for the nonce to be sent successfully.
-	Reauthenticate() error
+	Reauthenticate(ctx context.Context) error
 
 	// POST /recover
 	//
@@ -212,46 +213,46 @@ type Client interface {
 	// on email address.
 	//
 	// By default recovery links can only be sent once every 60 seconds.
-	Recover(req types.RecoverRequest) error
+	Recover(ctx context.Context, req types.RecoverRequest) error
 
 	// GET /settings
 	//
 	// Returns the publicly available settings for this auth instance.
-	GetSettings() (*types.SettingsResponse, error)
+	GetSettings(ctx context.Context) (*types.SettingsResponse, error)
 
 	// POST /signup
 	//
 	// Register a new user with an email and password.
-	Signup(req types.SignupRequest) (*types.SignupResponse, error)
+	Signup(ctx context.Context, req types.SignupRequest) (*types.SignupResponse, error)
 
 	// Sign in with email and password
 	//
 	// This is a convenience method that calls Token with the password grant type
-	SignInWithEmailPassword(email, password string) (*types.TokenResponse, error)
+	SignInWithEmailPassword(ctx context.Context, email, password string) (*types.TokenResponse, error)
 	// Sign in with phone and password
 	//
 	// This is a convenience method that calls Token with the password grant type
-	SignInWithPhonePassword(phone, password string) (*types.TokenResponse, error)
+	SignInWithPhonePassword(ctx context.Context, phone, password string) (*types.TokenResponse, error)
 	// Sign in with refresh token
 	//
 	// This is a convenience method that calls Token with the refresh_token grant type
-	RefreshToken(refreshToken string) (*types.TokenResponse, error)
+	RefreshToken(ctx context.Context, refreshToken string) (*types.TokenResponse, error)
 	// POST /token
 	//
 	// This is an OAuth2 endpoint that currently implements the password and
 	// refresh_token grant types
-	Token(req types.TokenRequest) (*types.TokenResponse, error)
+	Token(ctx context.Context, req types.TokenRequest) (*types.TokenResponse, error)
 
 	// GET /user
 	//
 	// Get the JSON object for the logged in user (requires authentication)
-	GetUser() (*types.UserResponse, error)
+	GetUser(ctx context.Context) (*types.UserResponse, error)
 	// PUT /user
 	//
 	// Update a user (Requires authentication). Apart from changing email/password,
 	// this method can be used to set custom user data. Changing the email will
 	// result in a magiclink being sent out.
-	UpdateUser(req types.UpdateUserRequest) (*types.UpdateUserResponse, error)
+	UpdateUser(ctx context.Context, req types.UpdateUserRequest) (*types.UpdateUserResponse, error)
 
 	// GET /verify
 	//
@@ -266,7 +267,7 @@ type Client interface {
 	// NOTE: This endpoint may return a nil error, but the Response can contain
 	// error details extracted from the returned URL. Please check that the Error,
 	// ErrorCode and/or ErrorDescription fields of the response are empty.
-	Verify(req types.VerifyRequest) (*types.VerifyResponse, error)
+	Verify(ctx context.Context, req types.VerifyRequest) (*types.VerifyResponse, error)
 	// POST /verify
 	//
 	// Verify a registration or a password recovery. Type can be signup or recovery
@@ -276,7 +277,7 @@ type Client interface {
 	// This differs from GET /verify as it requires an email or phone to be given,
 	// which is used to verify the token associated to the user. It also returns a
 	// JSON response rather than a redirect.
-	VerifyForUser(req types.VerifyForUserRequest) (*types.VerifyForUserResponse, error)
+	VerifyForUser(ctx context.Context, req types.VerifyForUserRequest) (*types.VerifyForUserResponse, error)
 
 	// GET /sso/saml/metadata
 	//
@@ -284,7 +285,7 @@ type Client interface {
 	//
 	// If successful, the server returns an XML response. Making sense of this is
 	// outside the scope of this client, so it is simply returned as []byte.
-	SAMLMetadata() ([]byte, error)
+	SAMLMetadata(ctx context.Context) ([]byte, error)
 	// POST /sso/saml/acs
 	//
 	// Implements the main Assertion Consumer Service endpoint behavior.
@@ -319,5 +320,5 @@ type Client interface {
 	// Auth allows you to skip following the redirect by setting SkipHTTPRedirect
 	// on the request struct. In this case, the URL to redirect to will be returned
 	// in the response.
-	SSO(req types.SSORequest) (*types.SSOResponse, error)
+	SSO(ctx context.Context, req types.SSORequest) (*types.SSOResponse, error)
 }

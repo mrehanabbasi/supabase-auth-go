@@ -20,7 +20,7 @@ func TestAdminGenerateLink(t *testing.T) {
 
 	// Testing signup link
 	email := randomEmail()
-	resp, err := admin.AdminGenerateLink(types.AdminGenerateLinkRequest{
+	resp, err := admin.AdminGenerateLink(ctx, types.AdminGenerateLinkRequest{
 		Type:       "signup",
 		Email:      email,
 		Password:   "password",
@@ -131,7 +131,7 @@ func TestAdminGenerateLink(t *testing.T) {
 	}
 	for name, data := range tests {
 		t.Run(name, func(t *testing.T) {
-			_, err := admin.AdminGenerateLink(data)
+			_, err := admin.AdminGenerateLink(ctx, data)
 			assert.Error(err)
 			assert.ErrorContains(err, "request is invalid")
 		})
@@ -139,7 +139,7 @@ func TestAdminGenerateLink(t *testing.T) {
 
 	// Testing email change links
 	newEmail := randomEmail()
-	resp, err = admin.AdminGenerateLink(types.AdminGenerateLinkRequest{
+	resp, err = admin.AdminGenerateLink(ctx, types.AdminGenerateLinkRequest{
 		Type:       "email_change_current",
 		Email:      email,
 		NewEmail:   newEmail,

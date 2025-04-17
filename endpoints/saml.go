@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -18,8 +19,8 @@ const (
 //
 // If successful, the server returns an XML response. Making sense of this is
 // outside the scope of this client, so it is simply returned as []byte.
-func (c *Client) SAMLMetadata() ([]byte, error) {
-	r, err := c.newRequest(samlMetadataPath, http.MethodGet, nil)
+func (c *Client) SAMLMetadata(ctx context.Context) ([]byte, error) {
+	r, err := c.newRequest(ctx, samlMetadataPath, http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}

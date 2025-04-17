@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -13,8 +14,8 @@ const reauthenticatePath = "/reauthenticate"
 // Sends a nonce to the user's email (preferred) or phone. This endpoint
 // requires the user to be logged in / authenticated first. The user needs to
 // have either an email or phone number for the nonce to be sent successfully.
-func (c *Client) Reauthenticate() error {
-	r, err := c.newRequest(reauthenticatePath, http.MethodGet, nil)
+func (c *Client) Reauthenticate(ctx context.Context) error {
+	r, err := c.newRequest(ctx, reauthenticatePath, http.MethodGet, nil)
 	if err != nil {
 		return err
 	}

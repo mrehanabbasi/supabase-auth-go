@@ -17,7 +17,7 @@ func TestSignup(t *testing.T) {
 
 	// Signup with email
 	email := randomEmail()
-	userResp, err := client.Signup(types.SignupRequest{
+	userResp, err := client.Signup(ctx, types.SignupRequest{
 		Email:    email,
 		Password: "password",
 	})
@@ -29,7 +29,7 @@ func TestSignup(t *testing.T) {
 	assert.InDelta(time.Now().Unix(), userResp.UpdatedAt.Unix(), float64(time.Second))
 
 	// Duplicate signup
-	dupeUserResp, err := client.Signup(types.SignupRequest{
+	dupeUserResp, err := client.Signup(ctx, types.SignupRequest{
 		Email:    email,
 		Password: "password",
 	})
@@ -43,7 +43,7 @@ func TestSignup(t *testing.T) {
 
 	// Sign up with phone
 	// Will error because SMS is not configured on the test server.
-	user, err := client.Signup(types.SignupRequest{
+	user, err := client.Signup(ctx, types.SignupRequest{
 		Phone:    "+15555555555",
 		Password: "password",
 	})
@@ -53,7 +53,7 @@ func TestSignup(t *testing.T) {
 	// Autoconfirmed signup
 	// Should return a session
 	email = randomEmail()
-	session, err := autoconfirmClient.Signup(types.SignupRequest{
+	session, err := autoconfirmClient.Signup(ctx, types.SignupRequest{
 		Email:    email,
 		Password: "password",
 	})
@@ -70,7 +70,7 @@ func TestSignup(t *testing.T) {
 
 	// Sign up with signups disabled
 	email = randomEmail()
-	user, err = signupDisabledClient.Signup(types.SignupRequest{
+	user, err = signupDisabledClient.Signup(ctx, types.SignupRequest{
 		Email:    email,
 		Password: "password",
 	})

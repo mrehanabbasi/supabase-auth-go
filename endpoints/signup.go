@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -17,13 +18,13 @@ const signupPath = "/signup"
 // POST /signup
 //
 // Register a new user with an email and password.
-func (c *Client) Signup(req types.SignupRequest) (*types.SignupResponse, error) {
+func (c *Client) Signup(ctx context.Context, req types.SignupRequest) (*types.SignupResponse, error) {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
 
-	r, err := c.newRequest(signupPath, http.MethodPost, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, signupPath, http.MethodPost, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}

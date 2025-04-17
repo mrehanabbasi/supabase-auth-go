@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -22,13 +23,13 @@ const ssoPath = "/sso"
 // Auth allows you to skip following the redirect by setting SkipHTTPRedirect
 // on the request struct. In this case, the URL to redirect to will be returned
 // in the response.
-func (c *Client) SSO(req types.SSORequest) (*types.SSOResponse, error) {
+func (c *Client) SSO(ctx context.Context, req types.SSORequest) (*types.SSOResponse, error) {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
 
-	r, err := c.newRequest(http.MethodPost, ssoPath, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, http.MethodPost, ssoPath, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -14,8 +15,8 @@ const logoutPath = "/logout"
 //
 // This will revoke all refresh tokens for the user. Remember that the JWT
 // tokens will still be valid for stateless auth until they expires.
-func (c *Client) Logout() error {
-	r, err := c.newRequest(logoutPath, http.MethodPost, nil)
+func (c *Client) Logout(ctx context.Context) error {
+	r, err := c.newRequest(ctx, logoutPath, http.MethodPost, nil)
 	if err != nil {
 		return err
 	}

@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -18,13 +19,13 @@ const recoverPath = "/recover"
 // on email address.
 //
 // By default recovery links can only be sent once every 60 seconds.
-func (c *Client) Recover(req types.RecoverRequest) error {
+func (c *Client) Recover(ctx context.Context, req types.RecoverRequest) error {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return err
 	}
 
-	r, err := c.newRequest(recoverPath, http.MethodPost, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, recoverPath, http.MethodPost, bytes.NewBuffer(body))
 	if err != nil {
 		return err
 	}

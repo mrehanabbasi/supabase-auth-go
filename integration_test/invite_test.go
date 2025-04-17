@@ -18,7 +18,7 @@ func TestInvite(t *testing.T) {
 	admin := withAdmin(client)
 
 	email := randomEmail()
-	user, err := admin.Invite(types.InviteRequest{
+	user, err := admin.Invite(ctx, types.InviteRequest{
 		Email: email,
 	})
 	require.NoError(err)

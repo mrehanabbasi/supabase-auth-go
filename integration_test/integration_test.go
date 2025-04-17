@@ -1,6 +1,7 @@
 package integration_test
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"math/rand"
@@ -11,9 +12,10 @@ import (
 
 	backoff "github.com/cenkalti/backoff/v4"
 	jwt "github.com/golang-jwt/jwt/v4"
-	supaAuth "github.com/mrehanabbasi/supabase-auth-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	supaAuth "github.com/mrehanabbasi/supabase-auth-go"
 )
 
 const (
@@ -30,6 +32,8 @@ var (
 
 	// Used to validate UUIDs.
 	uuidRegex = regexp.MustCompile(`^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$`)
+
+	ctx = context.Background()
 )
 
 func randomString(n int) string {
@@ -87,7 +91,7 @@ func TestMain(m *testing.M) {
 	// Ensure the server is ready before running tests.
 	err := backoff.Retry(
 		func() error {
-			health, err := client.HealthCheck()
+			health, err := client.HealthCheck(ctx)
 			if err != nil {
 				return err
 			}
@@ -95,7 +99,7 @@ func TestMain(m *testing.M) {
 				return fmt.Errorf("health check - unexpected server name: %s", health.Name)
 			}
 
-			health, err = autoconfirmClient.HealthCheck()
+			health, err = autoconfirmClient.HealthCheck(ctx)
 			if err != nil {
 				return err
 			}
@@ -103,7 +107,7 @@ func TestMain(m *testing.M) {
 				return fmt.Errorf("health check - unexpected server name: %s", health.Name)
 			}
 
-			health, err = signupDisabledClient.HealthCheck()
+			health, err = signupDisabledClient.HealthCheck(ctx)
 			if err != nil {
 				return err
 			}
@@ -129,7 +133,7 @@ func TestWithClient(t *testing.T) {
 	require := require.New(t)
 
 	c := supaAuth.New(projectReference, apiKey).WithCustomAuthURL("http://localhost:9999")
-	h, err := c.HealthCheck()
+	h, err := c.HealthCheck(ctx)
 	require.NoError(err)
 	assert.Equal("GoTrue", h.Name)
 
@@ -137,7 +141,7 @@ func TestWithClient(t *testing.T) {
 	c = c.WithClient(&http.Client{
 		Transport: roundTripper,
 	})
-	h, err = c.HealthCheck()
+	h, err = c.HealthCheck(ctx)
 	require.NoError(err)
 	assert.Equal("GoTrue", h.Name)
 	assert.True(roundTripper.visited)

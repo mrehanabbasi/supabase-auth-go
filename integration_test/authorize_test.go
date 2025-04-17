@@ -14,20 +14,20 @@ func TestAuthorize(t *testing.T) {
 	require := require.New(t)
 
 	// Provider not enabled
-	_, err := client.Authorize(types.AuthorizeRequest{
+	_, err := client.Authorize(ctx, types.AuthorizeRequest{
 		Provider: "apple",
 	})
 	assert.Error(err)
 
 	// Provider enabled
-	resp, err := autoconfirmClient.Authorize(types.AuthorizeRequest{
+	resp, err := autoconfirmClient.Authorize(ctx, types.AuthorizeRequest{
 		Provider: "github",
 	})
 	require.NoError(err)
 	assert.Contains(resp.AuthorizationURL, "github.com/login/oauth/authorize")
 
 	// Test login with PKCE
-	resp, err = autoconfirmClient.Authorize(types.AuthorizeRequest{
+	resp, err = autoconfirmClient.Authorize(ctx, types.AuthorizeRequest{
 		Provider: "github",
 		FlowType: "pkce",
 	})
@@ -36,6 +36,6 @@ func TestAuthorize(t *testing.T) {
 	require.NotEmpty(resp.Verifier)
 
 	// No provider chosen
-	_, err = autoconfirmClient.Authorize(types.AuthorizeRequest{})
+	_, err = autoconfirmClient.Authorize(ctx, types.AuthorizeRequest{})
 	assert.Error(err)
 }

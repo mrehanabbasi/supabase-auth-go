@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,10 +14,13 @@ import (
 // GET /admin/users/{user_id}/factors
 //
 // Get a list of factors for a user.
-func (c *Client) AdminListUserFactors(req types.AdminListUserFactorsRequest) (*types.AdminListUserFactorsResponse, error) {
+func (c *Client) AdminListUserFactors(
+	ctx context.Context,
+	req types.AdminListUserFactorsRequest,
+) (*types.AdminListUserFactorsResponse, error) {
 	path := fmt.Sprintf("%s/%s/factors", adminUsersPath, req.UserID)
 
-	r, err := c.newRequest(path, http.MethodGet, nil)
+	r, err := c.newRequest(ctx, path, http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +53,10 @@ func (c *Client) AdminListUserFactors(req types.AdminListUserFactorsRequest) (*t
 // PUT /admin/users/{user_id}/factors/{factor_id}
 //
 // Update a factor for a user.
-func (c *Client) AdminUpdateUserFactor(req types.AdminUpdateUserFactorRequest) (*types.AdminUpdateUserFactorResponse, error) {
+func (c *Client) AdminUpdateUserFactor(
+	ctx context.Context,
+	req types.AdminUpdateUserFactorRequest,
+) (*types.AdminUpdateUserFactorResponse, error) {
 	if req.FriendlyName == "" {
 		return nil, types.ErrInvalidAdminUpdateFactorRequest
 	}
@@ -61,7 +68,7 @@ func (c *Client) AdminUpdateUserFactor(req types.AdminUpdateUserFactorRequest) (
 		return nil, err
 	}
 
-	r, err := c.newRequest(path, http.MethodPut, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, path, http.MethodPut, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}
@@ -92,10 +99,10 @@ func (c *Client) AdminUpdateUserFactor(req types.AdminUpdateUserFactorRequest) (
 // DELETE /admin/users/{user_id}/factors/{factor_id}
 //
 // Delete a factor for a user.
-func (c *Client) AdminDeleteUserFactor(req types.AdminDeleteUserFactorRequest) error {
+func (c *Client) AdminDeleteUserFactor(ctx context.Context, req types.AdminDeleteUserFactorRequest) error {
 	path := fmt.Sprintf("%s/%s/factors/%s", adminUsersPath, req.UserID, req.FactorID)
 
-	r, err := c.newRequest(path, http.MethodDelete, nil)
+	r, err := c.newRequest(ctx, path, http.MethodDelete, nil)
 	if err != nil {
 		return err
 	}

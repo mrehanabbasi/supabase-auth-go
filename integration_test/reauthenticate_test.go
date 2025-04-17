@@ -14,20 +14,20 @@ func TestReauthenticate(t *testing.T) {
 	require := require.New(t)
 
 	// User must be authenticated first
-	err := client.Reauthenticate()
+	err := client.Reauthenticate(ctx)
 	assert.Error(err)
 
 	client := autoconfirmClient
 
 	// Create a new user
 	email := randomEmail()
-	session, err := client.Signup(types.SignupRequest{
+	session, err := client.Signup(ctx, types.SignupRequest{
 		Email:    email,
 		Password: "password",
 	})
 	require.NoError(err)
 
 	client = client.WithToken(session.AccessToken)
-	err = client.Reauthenticate()
+	err = client.Reauthenticate(ctx)
 	assert.NoError(err)
 }

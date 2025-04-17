@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -21,13 +22,13 @@ const magiclinkPath = "/magiclink"
 // address which they can use to redeem an access_token.
 //
 // By default Magic Links can only be sent once every 60 seconds.
-func (c *Client) Magiclink(req types.MagiclinkRequest) error {
+func (c *Client) Magiclink(ctx context.Context, req types.MagiclinkRequest) error {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return err
 	}
 
-	r, err := c.newRequest(magiclinkPath, http.MethodPost, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, magiclinkPath, http.MethodPost, bytes.NewBuffer(body))
 	if err != nil {
 		return err
 	}

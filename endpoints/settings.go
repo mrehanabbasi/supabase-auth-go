@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,8 +15,8 @@ var settingsPath = "/settings"
 // GET /settings
 //
 // Returns the publicly available settings for this auth instance.
-func (c *Client) GetSettings() (*types.SettingsResponse, error) {
-	r, err := c.newRequest(settingsPath, http.MethodGet, nil)
+func (c *Client) GetSettings(ctx context.Context) (*types.SettingsResponse, error) {
+	r, err := c.newRequest(ctx, settingsPath, http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}

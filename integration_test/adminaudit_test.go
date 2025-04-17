@@ -20,20 +20,20 @@ func TestAdminAudit(t *testing.T) {
 	require := require.New(t)
 
 	// User must be authenticated first
-	_, err := client.AdminAudit(types.AdminAuditRequest{})
+	_, err := client.AdminAudit(ctx, types.AdminAuditRequest{})
 	assert.Error(err)
 
 	client := client.WithToken(adminToken())
 
 	// Get audit logs
-	resp, err := client.AdminAudit(types.AdminAuditRequest{})
+	resp, err := client.AdminAudit(ctx, types.AdminAuditRequest{})
 	require.NoError(err)
 	assert.NotNil(resp.Logs)
 
 	// Generate some log entries
 	for i := 0; i < 10; i++ {
 		pass := randomString(10)
-		_, err = client.AdminCreateUser(types.AdminCreateUserRequest{
+		_, err = client.AdminCreateUser(ctx, types.AdminCreateUserRequest{
 			Email:    randomEmail(),
 			Password: &pass,
 		})
@@ -41,7 +41,7 @@ func TestAdminAudit(t *testing.T) {
 	}
 
 	// Get audit logs with pagination
-	resp, err = client.AdminAudit(types.AdminAuditRequest{
+	resp, err = client.AdminAudit(ctx, types.AdminAuditRequest{
 		Page:    1,
 		PerPage: 4,
 	})
@@ -51,7 +51,7 @@ func TestAdminAudit(t *testing.T) {
 	assert.EqualValues(2, resp.NextPage)
 	assert.GreaterOrEqual(resp.TotalPages, uint(3))
 
-	resp, err = client.AdminAudit(types.AdminAuditRequest{
+	resp, err = client.AdminAudit(ctx, types.AdminAuditRequest{
 		Page:    2,
 		PerPage: 4,
 	})
@@ -61,7 +61,7 @@ func TestAdminAudit(t *testing.T) {
 	assert.EqualValues(3, resp.NextPage)
 	assert.GreaterOrEqual(resp.TotalPages, uint(3))
 
-	resp, err = client.AdminAudit(types.AdminAuditRequest{
+	resp, err = client.AdminAudit(ctx, types.AdminAuditRequest{
 		Page:    3,
 		PerPage: 4,
 	})
@@ -71,13 +71,13 @@ func TestAdminAudit(t *testing.T) {
 	assert.GreaterOrEqual(resp.TotalPages, uint(3))
 
 	// Invalid - empty query
-	_, err = client.AdminAudit(types.AdminAuditRequest{
+	_, err = client.AdminAudit(ctx, types.AdminAuditRequest{
 		Query: &types.AuditQuery{},
 	})
 	assert.Error(err)
 
 	// Invalid - invalid query column
-	_, err = client.AdminAudit(types.AdminAuditRequest{
+	_, err = client.AdminAudit(ctx, types.AdminAuditRequest{
 		Query: &types.AuditQuery{
 			Column: "invalid",
 			Value:  "valid",
@@ -86,7 +86,7 @@ func TestAdminAudit(t *testing.T) {
 	assert.Error(err)
 
 	// Invalid - no query value
-	_, err = client.AdminAudit(types.AdminAuditRequest{
+	_, err = client.AdminAudit(ctx, types.AdminAuditRequest{
 		Query: &types.AuditQuery{
 			Column: types.AuditQueryColumnAction,
 		},
@@ -94,7 +94,7 @@ func TestAdminAudit(t *testing.T) {
 	assert.Error(err)
 
 	// Valid query
-	resp, err = client.AdminAudit(types.AdminAuditRequest{
+	resp, err = client.AdminAudit(ctx, types.AdminAuditRequest{
 		Query: &types.AuditQuery{
 			Column: types.AuditQueryColumnAction,
 			Value:  "user_signedup",
@@ -103,7 +103,7 @@ func TestAdminAudit(t *testing.T) {
 	require.NoError(err)
 	assert.GreaterOrEqual(len(resp.Logs), 10)
 
-	resp, err = client.AdminAudit(types.AdminAuditRequest{
+	resp, err = client.AdminAudit(ctx, types.AdminAuditRequest{
 		Query: &types.AuditQuery{
 			Column: types.AuditQueryColumnAction,
 			Value:  "not user_signedup",

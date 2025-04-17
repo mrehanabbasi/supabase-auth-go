@@ -1,6 +1,7 @@
 package endpoints
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -26,7 +27,7 @@ const adminAuditPath = "/admin/audit"
 // per request. This can be configured with PerPage in the request. The response
 // will include the total number of results, as well as the total number of pages
 // and, if not already on the last page, the next page number.
-func (c *Client) AdminAudit(req types.AdminAuditRequest) (*types.AdminAuditResponse, error) {
+func (c *Client) AdminAudit(ctx context.Context, req types.AdminAuditRequest) (*types.AdminAuditResponse, error) {
 	if req.Query != nil {
 		if req.Query.Column != types.AuditQueryColumnAuthor && req.Query.Column != types.AuditQueryColumnAction && req.Query.Column != types.AuditQueryColumnType {
 			return nil, types.ErrInvalidAdminAuditRequest
@@ -36,7 +37,7 @@ func (c *Client) AdminAudit(req types.AdminAuditRequest) (*types.AdminAuditRespo
 		}
 	}
 
-	r, err := c.newRequest(adminAuditPath, http.MethodGet, nil)
+	r, err := c.newRequest(ctx, adminAuditPath, http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -21,7 +21,7 @@ func TestVerify(t *testing.T) {
 	client := autoconfirmClient
 
 	// Test Verify, unauthorized
-	vResp, err := client.Verify(types.VerifyRequest{
+	vResp, err := client.Verify(ctx, types.VerifyRequest{
 		Type:       types.VerificationTypeSignup,
 		Token:      "abcde",
 		RedirectTo: "http://localhost:3000",
@@ -32,11 +32,11 @@ func TestVerify(t *testing.T) {
 	assert.Equal("access_denied", vResp.Error)
 
 	// Test Verify, invalid request
-	_, err = client.Verify(types.VerifyRequest{})
+	_, err = client.Verify(ctx, types.VerifyRequest{})
 	assert.Error(err)
 
 	// Test VerifyForUser, user doesn't exist
-	_, err = client.VerifyForUser(types.VerifyForUserRequest{
+	_, err = client.VerifyForUser(ctx, types.VerifyForUserRequest{
 		Type:       types.VerificationTypeInvite,
 		Token:      "abcde",
 		RedirectTo: "http://localhost:3000",
@@ -46,13 +46,13 @@ func TestVerify(t *testing.T) {
 
 	// Test VerifyForUser, user exists, unauthorized
 	email := randomEmail()
-	_, err = client.Signup(types.SignupRequest{
+	_, err = client.Signup(ctx, types.SignupRequest{
 		Email:    email,
 		Password: "password",
 	})
 	require.NoError(err)
 
-	_, err = client.VerifyForUser(types.VerifyForUserRequest{
+	_, err = client.VerifyForUser(ctx, types.VerifyForUserRequest{
 		Type:       types.VerificationTypeSignup,
 		Token:      "abcde",
 		RedirectTo: "http://localhost:3000",
@@ -61,6 +61,6 @@ func TestVerify(t *testing.T) {
 	assert.Error(err)
 
 	// Test VerifyForUser, invalid request
-	_, err = client.VerifyForUser(types.VerifyForUserRequest{})
+	_, err = client.VerifyForUser(ctx, types.VerifyForUserRequest{})
 	assert.Error(err)
 }

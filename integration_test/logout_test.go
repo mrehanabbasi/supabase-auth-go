@@ -16,23 +16,23 @@ func TestLogout(t *testing.T) {
 	client := autoconfirmClient
 
 	// Logout without a valid token.
-	err := client.Logout()
+	err := client.Logout(ctx)
 	assert.Error(err)
 
 	// Create logged in user.
 	email := randomEmail()
 	password := randomString(10)
-	session, err := client.Signup(types.SignupRequest{
+	session, err := client.Signup(ctx, types.SignupRequest{
 		Email:    email,
 		Password: password,
 	})
 	require.NoError(err)
 
 	// Logout.
-	err = client.WithToken(session.AccessToken).Logout()
+	err = client.WithToken(session.AccessToken).Logout(ctx)
 	require.NoError(err)
 
 	// Attempt refresh - should fail.
-	_, err = client.RefreshToken(session.RefreshToken)
+	_, err = client.RefreshToken(ctx, session.RefreshToken)
 	assert.Error(err)
 }

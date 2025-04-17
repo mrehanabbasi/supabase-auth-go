@@ -23,13 +23,13 @@ func TestAdminCreateUser(t *testing.T) {
 		Role:     "admin",
 		Password: &pass,
 	}
-	resp, err := admin.AdminCreateUser(req)
+	resp, err := admin.AdminCreateUser(ctx, req)
 	require.NoError(err)
 	require.Regexp(uuidRegex, resp.ID)
 	assert.Equal(resp.Email, email)
 	assert.Equal(resp.Role, "admin")
 
-	_, err = admin.AdminCreateUser(types.AdminCreateUserRequest{})
+	_, err = admin.AdminCreateUser(ctx, types.AdminCreateUserRequest{})
 	assert.Error(err)
 }
 
@@ -47,12 +47,12 @@ func TestAdminListUsers(t *testing.T) {
 		Role:     "test",
 		Password: &pass,
 	}
-	createResp, err := admin.AdminCreateUser(req)
+	createResp, err := admin.AdminCreateUser(ctx, req)
 	require.NoError(err)
 	require.Regexp(uuidRegex, createResp.ID)
 
 	// Then list and look up the user we just created
-	resp, err := admin.AdminListUsers()
+	resp, err := admin.AdminListUsers(ctx)
 	require.NoError(err)
 	assert.NotEmpty(resp)
 	for _, u := range resp.Users {
@@ -68,7 +68,7 @@ func TestAdminGetUser(t *testing.T) {
 	require := require.New(t)
 
 	// Need admin credential
-	_, err := client.AdminGetUser(types.AdminGetUserRequest{
+	_, err := client.AdminGetUser(ctx, types.AdminGetUserRequest{
 		UserID: uuid.Nil,
 	})
 	assert.Error(err)
@@ -83,12 +83,12 @@ func TestAdminGetUser(t *testing.T) {
 		Role:     "test",
 		Password: &pass,
 	}
-	createResp, err := admin.AdminCreateUser(req)
+	createResp, err := admin.AdminCreateUser(ctx, req)
 	require.NoError(err)
 	require.Regexp(uuidRegex, createResp.ID)
 
 	// Get that user
-	resp, err := admin.AdminGetUser(types.AdminGetUserRequest{
+	resp, err := admin.AdminGetUser(ctx, types.AdminGetUserRequest{
 		UserID: createResp.ID,
 	})
 	require.NoError(err)
@@ -96,7 +96,7 @@ func TestAdminGetUser(t *testing.T) {
 	assert.Equal(resp.Role, "test")
 
 	// Cannot get a user that doesn't exist
-	_, err = admin.AdminGetUser(types.AdminGetUserRequest{
+	_, err = admin.AdminGetUser(ctx, types.AdminGetUserRequest{
 		UserID: uuid.New(),
 	})
 	assert.Error(err)
@@ -107,7 +107,7 @@ func TestAdminUpdateUser(t *testing.T) {
 	require := require.New(t)
 
 	// Need admin credential
-	_, err := client.AdminUpdateUser(types.AdminUpdateUserRequest{
+	_, err := client.AdminUpdateUser(ctx, types.AdminUpdateUserRequest{
 		UserID: uuid.Nil,
 	})
 	assert.Error(err)
@@ -122,12 +122,12 @@ func TestAdminUpdateUser(t *testing.T) {
 		Role:     "test",
 		Password: &pass,
 	}
-	createResp, err := admin.AdminCreateUser(req)
+	createResp, err := admin.AdminCreateUser(ctx, req)
 	require.NoError(err)
 	require.Regexp(uuidRegex, createResp.ID)
 
 	// Update the user
-	resp, err := admin.AdminUpdateUser(types.AdminUpdateUserRequest{
+	resp, err := admin.AdminUpdateUser(ctx, types.AdminUpdateUserRequest{
 		UserID: createResp.ID,
 		Role:   "admin",
 	})
@@ -136,7 +136,7 @@ func TestAdminUpdateUser(t *testing.T) {
 	assert.Equal(resp.Role, "admin")
 
 	// Cannot update a user that doesn't exist
-	_, err = admin.AdminUpdateUser(types.AdminUpdateUserRequest{
+	_, err = admin.AdminUpdateUser(ctx, types.AdminUpdateUserRequest{
 		UserID: uuid.New(),
 	})
 	assert.Error(err)
@@ -147,7 +147,7 @@ func TestAdminDeleteUser(t *testing.T) {
 	require := require.New(t)
 
 	// Need admin credential
-	err := client.AdminDeleteUser(types.AdminDeleteUserRequest{
+	err := client.AdminDeleteUser(ctx, types.AdminDeleteUserRequest{
 		UserID: uuid.Nil,
 	})
 	assert.Error(err)
@@ -157,7 +157,7 @@ func TestAdminDeleteUser(t *testing.T) {
 	// Create a user
 	pass := "password"
 	email := randomEmail()
-	resp, err := admin.AdminCreateUser(types.AdminCreateUserRequest{
+	resp, err := admin.AdminCreateUser(ctx, types.AdminCreateUserRequest{
 		Email:    email,
 		Role:     "test",
 		Password: &pass,
@@ -166,13 +166,13 @@ func TestAdminDeleteUser(t *testing.T) {
 	assert.NotEqual(uuid.Nil, resp.ID)
 
 	// Delete the user
-	err = admin.AdminDeleteUser(types.AdminDeleteUserRequest{
+	err = admin.AdminDeleteUser(ctx, types.AdminDeleteUserRequest{
 		UserID: resp.ID,
 	})
 	assert.NoError(err)
 
 	// Cannot delete a user that doesn't exist
-	err = admin.AdminDeleteUser(types.AdminDeleteUserRequest{
+	err = admin.AdminDeleteUser(ctx, types.AdminDeleteUserRequest{
 		UserID: uuid.New(),
 	})
 	assert.Error(err)

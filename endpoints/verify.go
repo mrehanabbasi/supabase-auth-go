@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -27,7 +28,7 @@ const verifyPath = "/verify"
 // NOTE: This endpoint may return a nil error, but the Response can contain
 // error details extracted from the returned URL. Please check that the Error,
 // ErrorCode and/or ErrorDescription fields of the response are empty.
-func (c *Client) Verify(req types.VerifyRequest) (*types.VerifyResponse, error) {
+func (c *Client) Verify(ctx context.Context, req types.VerifyRequest) (*types.VerifyResponse, error) {
 	if req.Type == "" {
 		return nil, types.ErrInvalidVerifyRequest
 	}
@@ -38,7 +39,7 @@ func (c *Client) Verify(req types.VerifyRequest) (*types.VerifyResponse, error) 
 		return nil, types.ErrInvalidVerifyRequest
 	}
 
-	r, err := c.newRequest(verifyPath, http.MethodGet, nil)
+	r, err := c.newRequest(ctx, verifyPath, http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +110,7 @@ func (c *Client) Verify(req types.VerifyRequest) (*types.VerifyResponse, error) 
 // This differs from GET /verify as it requires an email or phone to be given,
 // which is used to verify the token associated to the user. It also returns a
 // JSON response rather than a redirect.
-func (c *Client) VerifyForUser(req types.VerifyForUserRequest) (*types.VerifyForUserResponse, error) {
+func (c *Client) VerifyForUser(ctx context.Context, req types.VerifyForUserRequest) (*types.VerifyForUserResponse, error) {
 	if req.Type == "" {
 		return nil, types.ErrInvalidVerifyRequest
 	}
@@ -128,7 +129,7 @@ func (c *Client) VerifyForUser(req types.VerifyForUserRequest) (*types.VerifyFor
 		return nil, err
 	}
 
-	r, err := c.newRequest(verifyPath, http.MethodPost, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, verifyPath, http.MethodPost, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}

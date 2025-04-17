@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -18,13 +19,13 @@ const otpPath = "/otp"
 //
 // If CreateUser is true, the user will be automatically signed up if the user
 // doesn't exist.
-func (c *Client) OTP(req types.OTPRequest) error {
+func (c *Client) OTP(ctx context.Context, req types.OTPRequest) error {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return err
 	}
 
-	r, err := c.newRequest(otpPath, http.MethodPost, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, otpPath, http.MethodPost, bytes.NewBuffer(body))
 	if err != nil {
 		return err
 	}

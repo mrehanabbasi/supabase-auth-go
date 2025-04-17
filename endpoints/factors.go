@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -18,7 +19,7 @@ const factorsPath = "/factors"
 // POST /factors
 //
 // Enroll a new factor.
-func (c *Client) EnrollFactor(req types.EnrollFactorRequest) (*types.EnrollFactorResponse, error) {
+func (c *Client) EnrollFactor(ctx context.Context, req types.EnrollFactorRequest) (*types.EnrollFactorResponse, error) {
 	if req.FactorType == "" {
 		req.FactorType = types.FactorTypeTOTP
 	}
@@ -28,7 +29,7 @@ func (c *Client) EnrollFactor(req types.EnrollFactorRequest) (*types.EnrollFacto
 		return nil, err
 	}
 
-	r, err := c.newRequest(factorsPath, http.MethodPost, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, factorsPath, http.MethodPost, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}
@@ -57,9 +58,9 @@ func (c *Client) EnrollFactor(req types.EnrollFactorRequest) (*types.EnrollFacto
 // POST /factors/{factor_id}/challenge
 //
 // Challenge a factor.
-func (c *Client) ChallengeFactor(req types.ChallengeFactorRequest) (*types.ChallengeFactorResponse, error) {
+func (c *Client) ChallengeFactor(ctx context.Context, req types.ChallengeFactorRequest) (*types.ChallengeFactorResponse, error) {
 	url := fmt.Sprintf("%s/%s/challenge", factorsPath, req.FactorID)
-	r, err := c.newRequest(url, http.MethodPost, nil)
+	r, err := c.newRequest(ctx, url, http.MethodPost, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +97,7 @@ func (c *Client) ChallengeFactor(req types.ChallengeFactorRequest) (*types.Chall
 // POST /factors/{factor_id}/verify
 //
 // Verify the challenge for an enrolled factor.
-func (c *Client) VerifyFactor(req types.VerifyFactorRequest) (*types.VerifyFactorResponse, error) {
+func (c *Client) VerifyFactor(ctx context.Context, req types.VerifyFactorRequest) (*types.VerifyFactorResponse, error) {
 	url := fmt.Sprintf("%s/%s/verify", factorsPath, req.FactorID)
 
 	body, err := json.Marshal(req)
@@ -104,7 +105,7 @@ func (c *Client) VerifyFactor(req types.VerifyFactorRequest) (*types.VerifyFacto
 		return nil, err
 	}
 
-	r, err := c.newRequest(url, http.MethodPost, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, url, http.MethodPost, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}
@@ -133,10 +134,10 @@ func (c *Client) VerifyFactor(req types.VerifyFactorRequest) (*types.VerifyFacto
 // DELETE /factors/{factor_id}
 //
 // Unenroll an enrolled factor.
-func (c *Client) UnenrollFactor(req types.UnenrollFactorRequest) (*types.UnenrollFactorResponse, error) {
+func (c *Client) UnenrollFactor(ctx context.Context, req types.UnenrollFactorRequest) (*types.UnenrollFactorResponse, error) {
 	url := fmt.Sprintf("%s/%s", factorsPath, req.FactorID)
 
-	r, err := c.newRequest(url, http.MethodDelete, nil)
+	r, err := c.newRequest(ctx, url, http.MethodDelete, nil)
 	if err != nil {
 		return nil, err
 	}

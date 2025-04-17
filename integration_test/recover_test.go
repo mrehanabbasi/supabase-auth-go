@@ -12,11 +12,11 @@ func TestRecover(t *testing.T) {
 	assert := assert.New(t)
 
 	email := randomEmail()
-	err := client.Recover(types.RecoverRequest{
+	err := client.Recover(ctx, types.RecoverRequest{
 		Email: email,
 	})
 	assert.NoError(err)
 
-	err = client.Recover(types.RecoverRequest{})
+	err = client.Recover(ctx, types.RecoverRequest{})
 	assert.Error(err)
 }

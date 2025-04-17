@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,8 +16,8 @@ var userPath = "/user"
 // GET /user
 //
 // Get the JSON object for the logged in user (requires authentication)
-func (c *Client) GetUser() (*types.UserResponse, error) {
-	r, err := c.newRequest(userPath, http.MethodGet, nil)
+func (c *Client) GetUser(ctx context.Context) (*types.UserResponse, error) {
+	r, err := c.newRequest(ctx, userPath, http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -49,13 +50,13 @@ func (c *Client) GetUser() (*types.UserResponse, error) {
 // Update a user (Requires authentication). Apart from changing email/password,
 // this method can be used to set custom user data. Changing the email will
 // result in a magiclink being sent out.
-func (c *Client) UpdateUser(req types.UpdateUserRequest) (*types.UpdateUserResponse, error) {
+func (c *Client) UpdateUser(ctx context.Context, req types.UpdateUserRequest) (*types.UpdateUserResponse, error) {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
 
-	r, err := c.newRequest(userPath, http.MethodPut, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, userPath, http.MethodPut, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}

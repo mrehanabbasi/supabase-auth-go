@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,8 +16,8 @@ const adminSSOPath = "/admin/sso/providers"
 // GET /admin/sso/providers
 //
 // Get a list of all SAML SSO Identity Providers in the system.
-func (c *Client) AdminListSSOProviders() (*types.AdminListSSOProvidersResponse, error) {
-	r, err := c.newRequest(adminSSOPath, http.MethodGet, nil)
+func (c *Client) AdminListSSOProviders(ctx context.Context) (*types.AdminListSSOProvidersResponse, error) {
+	r, err := c.newRequest(ctx, adminSSOPath, http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -47,13 +48,13 @@ func (c *Client) AdminListSSOProviders() (*types.AdminListSSOProvidersResponse, 
 // POST /admin/sso/providers
 //
 // Create a new SAML SSO Identity Provider.
-func (c *Client) AdminCreateSSOProvider(req types.AdminCreateSSOProviderRequest) (*types.AdminCreateSSOProviderResponse, error) {
+func (c *Client) AdminCreateSSOProvider(ctx context.Context, req types.AdminCreateSSOProviderRequest) (*types.AdminCreateSSOProviderResponse, error) {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
 
-	r, err := c.newRequest(adminSSOPath, http.MethodPost, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, adminSSOPath, http.MethodPost, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}
@@ -84,8 +85,8 @@ func (c *Client) AdminCreateSSOProvider(req types.AdminCreateSSOProviderRequest)
 // GET /admin/sso/providers/{idp_id}
 //
 // Get a SAML SSO Identity Provider by ID.
-func (c *Client) AdminGetSSOProvider(req types.AdminGetSSOProviderRequest) (*types.AdminGetSSOProviderResponse, error) {
-	r, err := c.newRequest(fmt.Sprintf("%s/%s", adminSSOPath, req.ProviderID), http.MethodGet, nil)
+func (c *Client) AdminGetSSOProvider(ctx context.Context, req types.AdminGetSSOProviderRequest) (*types.AdminGetSSOProviderResponse, error) {
+	r, err := c.newRequest(ctx, fmt.Sprintf("%s/%s", adminSSOPath, req.ProviderID), http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -116,13 +117,16 @@ func (c *Client) AdminGetSSOProvider(req types.AdminGetSSOProviderRequest) (*typ
 // PUT /admin/sso/providers/{idp_id}
 //
 // Update a SAML SSO Identity Provider by ID.
-func (c *Client) AdminUpdateSSOProvider(req types.AdminUpdateSSOProviderRequest) (*types.AdminUpdateSSOProviderResponse, error) {
+func (c *Client) AdminUpdateSSOProvider(
+	ctx context.Context,
+	req types.AdminUpdateSSOProviderRequest,
+) (*types.AdminUpdateSSOProviderResponse, error) {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
 
-	r, err := c.newRequest(fmt.Sprintf("%s/%s", adminSSOPath, req.ProviderID), http.MethodPut, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, fmt.Sprintf("%s/%s", adminSSOPath, req.ProviderID), http.MethodPut, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}
@@ -153,9 +157,12 @@ func (c *Client) AdminUpdateSSOProvider(req types.AdminUpdateSSOProviderRequest)
 // DELETE /admin/sso/providers/{idp_id}
 //
 // Delete a SAML SSO Identity Provider by ID.
-func (c *Client) AdminDeleteSSOProvider(req types.AdminDeleteSSOProviderRequest) (*types.AdminDeleteSSOProviderResponse, error) {
+func (c *Client) AdminDeleteSSOProvider(
+	ctx context.Context,
+	req types.AdminDeleteSSOProviderRequest,
+) (*types.AdminDeleteSSOProviderResponse, error) {
 	path := fmt.Sprintf("%s/%s", adminSSOPath, req.ProviderID)
-	r, err := c.newRequest(path, http.MethodDelete, nil)
+	r, err := c.newRequest(ctx, path, http.MethodDelete, nil)
 	if err != nil {
 		return nil, err
 	}

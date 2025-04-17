@@ -15,7 +15,7 @@ func TestAdminListUserFactors(t *testing.T) {
 	require := require.New(t)
 
 	// Need admin credential
-	_, err := client.AdminListUserFactors(types.AdminListUserFactorsRequest{
+	_, err := client.AdminListUserFactors(ctx, types.AdminListUserFactorsRequest{
 		UserID: uuid.Nil,
 	})
 	assert.Error(err)
@@ -23,14 +23,14 @@ func TestAdminListUserFactors(t *testing.T) {
 	admin := withAdmin(client)
 
 	// Cannot get a user that doesn't exist
-	_, err = admin.AdminListUserFactors(types.AdminListUserFactorsRequest{
+	_, err = admin.AdminListUserFactors(ctx, types.AdminListUserFactorsRequest{
 		UserID: uuid.New(),
 	})
 	assert.Error(err)
 
 	// Create a user
 	email := randomEmail()
-	session, err := autoconfirmClient.Signup(types.SignupRequest{
+	session, err := autoconfirmClient.Signup(ctx, types.SignupRequest{
 		Email:    email,
 		Password: "password",
 	})
@@ -38,14 +38,14 @@ func TestAdminListUserFactors(t *testing.T) {
 	require.Regexp(uuidRegex, session.User.ID)
 
 	// Get that user's factors
-	resp, err := admin.AdminListUserFactors(types.AdminListUserFactorsRequest{
+	resp, err := admin.AdminListUserFactors(ctx, types.AdminListUserFactorsRequest{
 		UserID: session.User.ID,
 	})
 	require.NoError(err)
 	assert.Len(resp.Factors, 0)
 
 	// Enroll factor
-	enrollResp, err := autoconfirmClient.WithToken(session.AccessToken).EnrollFactor(types.EnrollFactorRequest{
+	enrollResp, err := autoconfirmClient.WithToken(session.AccessToken).EnrollFactor(ctx, types.EnrollFactorRequest{
 		FactorType:   types.FactorTypeTOTP,
 		FriendlyName: "Test Factor",
 		Issuer:       "example.com",
@@ -55,7 +55,7 @@ func TestAdminListUserFactors(t *testing.T) {
 	assert.NotEqual(uuid.Nil, enrollResp.ID)
 
 	// Get that user's factors again
-	resp, err = admin.AdminListUserFactors(types.AdminListUserFactorsRequest{
+	resp, err = admin.AdminListUserFactors(ctx, types.AdminListUserFactorsRequest{
 		UserID: session.User.ID,
 	})
 	require.NoError(err)
@@ -68,7 +68,7 @@ func TestUpdateUserFactor(t *testing.T) {
 	require := require.New(t)
 
 	// Need admin credential
-	_, err := client.AdminUpdateUserFactor(types.AdminUpdateUserFactorRequest{
+	_, err := client.AdminUpdateUserFactor(ctx, types.AdminUpdateUserFactorRequest{
 		UserID: uuid.Nil,
 	})
 	assert.Error(err)
@@ -76,7 +76,7 @@ func TestUpdateUserFactor(t *testing.T) {
 	admin := withAdmin(client)
 
 	// Cannot update a factor for user that doesn't exist
-	_, err = admin.AdminUpdateUserFactor(types.AdminUpdateUserFactorRequest{
+	_, err = admin.AdminUpdateUserFactor(ctx, types.AdminUpdateUserFactorRequest{
 		UserID:   uuid.New(),
 		FactorID: uuid.New(),
 	})
@@ -84,7 +84,7 @@ func TestUpdateUserFactor(t *testing.T) {
 
 	// Create a user
 	email := randomEmail()
-	session, err := autoconfirmClient.Signup(types.SignupRequest{
+	session, err := autoconfirmClient.Signup(ctx, types.SignupRequest{
 		Email:    email,
 		Password: "password",
 	})
@@ -92,7 +92,7 @@ func TestUpdateUserFactor(t *testing.T) {
 	require.Regexp(uuidRegex, session.User.ID)
 
 	// Enroll factor
-	enrollResp, err := autoconfirmClient.WithToken(session.AccessToken).EnrollFactor(types.EnrollFactorRequest{
+	enrollResp, err := autoconfirmClient.WithToken(session.AccessToken).EnrollFactor(ctx, types.EnrollFactorRequest{
 		FactorType:   types.FactorTypeTOTP,
 		FriendlyName: "Test Factor",
 		Issuer:       "example.com",
@@ -102,7 +102,7 @@ func TestUpdateUserFactor(t *testing.T) {
 	assert.NotEqual(uuid.Nil, enrollResp.ID)
 
 	// Update factor
-	updateResp, err := admin.AdminUpdateUserFactor(types.AdminUpdateUserFactorRequest{
+	updateResp, err := admin.AdminUpdateUserFactor(ctx, types.AdminUpdateUserFactorRequest{
 		UserID:   session.User.ID,
 		FactorID: enrollResp.ID,
 
@@ -112,7 +112,7 @@ func TestUpdateUserFactor(t *testing.T) {
 	assert.Equal("Updated Factor", updateResp.FriendlyName)
 
 	// Invalid request - nothing to update
-	_, err = admin.AdminUpdateUserFactor(types.AdminUpdateUserFactorRequest{
+	_, err = admin.AdminUpdateUserFactor(ctx, types.AdminUpdateUserFactorRequest{
 		UserID:   session.User.ID,
 		FactorID: enrollResp.ID,
 	})
@@ -123,7 +123,7 @@ func TestDeleteUserFactor(t *testing.T) {
 	assert := assert.New(t)
 
 	// Need admin credential
-	err := client.AdminDeleteUserFactor(types.AdminDeleteUserFactorRequest{
+	err := client.AdminDeleteUserFactor(ctx, types.AdminDeleteUserFactorRequest{
 		UserID:   uuid.New(),
 		FactorID: uuid.New(),
 	})
@@ -132,7 +132,7 @@ func TestDeleteUserFactor(t *testing.T) {
 	admin := withAdmin(client)
 
 	// Cannot delete a factor for user that doesn't exist
-	err = admin.AdminDeleteUserFactor(types.AdminDeleteUserFactorRequest{
+	err = admin.AdminDeleteUserFactor(ctx, types.AdminDeleteUserFactorRequest{
 		UserID:   uuid.New(),
 		FactorID: uuid.New(),
 	})

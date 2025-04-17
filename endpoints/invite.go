@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -16,13 +17,13 @@ const invitePath = "/invite"
 //
 // Invites a new user with an email.
 // This endpoint requires the service_role or supabase_admin JWT set using WithToken.
-func (c *Client) Invite(req types.InviteRequest) (*types.InviteResponse, error) {
+func (c *Client) Invite(ctx context.Context, req types.InviteRequest) (*types.InviteResponse, error) {
 	body, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
 
-	r, err := c.newRequest(invitePath, http.MethodPost, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, invitePath, http.MethodPost, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}

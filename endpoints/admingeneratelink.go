@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -56,7 +57,7 @@ func validateAdminGenerateLinkRequest(req types.AdminGenerateLinkRequest) error 
 // Among other things, the response also contains the query params of the action
 // link as separate JSON fields for convenience (along with the email OTP from
 // which the corresponding token is generated).
-func (c *Client) AdminGenerateLink(req types.AdminGenerateLinkRequest) (*types.AdminGenerateLinkResponse, error) {
+func (c *Client) AdminGenerateLink(ctx context.Context, req types.AdminGenerateLinkRequest) (*types.AdminGenerateLinkResponse, error) {
 	err := validateAdminGenerateLinkRequest(req)
 	if err != nil {
 		return nil, err
@@ -67,7 +68,7 @@ func (c *Client) AdminGenerateLink(req types.AdminGenerateLinkRequest) (*types.A
 		return nil, err
 	}
 
-	r, err := c.newRequest(adminGenerateLinkPath, http.MethodPost, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, adminGenerateLinkPath, http.MethodPost, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}

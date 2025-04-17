@@ -11,7 +11,7 @@ func TestSettings(t *testing.T) {
 	assert := assert.New(t)
 	require := require.New(t)
 
-	settings, err := client.GetSettings()
+	settings, err := client.GetSettings(ctx)
 	require.NoError(err)
 	assert.Equal(settings.Autoconfirm, false)
 	assert.Equal(settings.DisableSignup, false)
