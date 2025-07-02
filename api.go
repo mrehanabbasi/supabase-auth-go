@@ -99,7 +99,7 @@ type Client interface {
 	// Get a list of users.
 	//
 	// Requires admin token.
-	AdminListUsers(ctx context.Context) (*types.AdminListUsersResponse, error)
+	AdminListUsers(ctx context.Context, req types.AdminListUsersRequest) (*types.AdminListUsersResponse, error)
 	// GET /admin/users/{user_id}
 	//
 	// Get a user by their user_id.
@@ -233,14 +233,21 @@ type Client interface {
 	//
 	// This is a convenience method that calls Token with the password grant type
 	SignInWithPhonePassword(ctx context.Context, phone, password string) (*types.TokenResponse, error)
+	// Sign in with id token
+	//
+	// This is a convenience method that calls Token with the id_token grant type
+	SignInWithIdToken(
+		ctx context.Context,
+		provider, idToken, nonce, accessToken, captchaToken string,
+	) (*types.TokenResponse, error)
 	// Sign in with refresh token
 	//
 	// This is a convenience method that calls Token with the refresh_token grant type
 	RefreshToken(ctx context.Context, refreshToken string) (*types.TokenResponse, error)
 	// POST /token
 	//
-	// This is an OAuth2 endpoint that currently implements the password and
-	// refresh_token grant types
+	// This is an OAuth2 endpoint that currently implements the password, id_token,
+	// and refresh_token grant types
 	Token(ctx context.Context, req types.TokenRequest) (*types.TokenResponse, error)
 
 	// GET /user
