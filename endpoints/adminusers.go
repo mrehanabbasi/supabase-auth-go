@@ -53,11 +53,20 @@ func (c *Client) AdminCreateUser(ctx context.Context, req types.AdminCreateUserR
 // GET /admin/users
 //
 // Get a list of users.
-func (c *Client) AdminListUsers(ctx context.Context) (*types.AdminListUsersResponse, error) {
+func (c *Client) AdminListUsers(ctx context.Context, req types.AdminListUsersRequest) (*types.AdminListUsersResponse, error) {
 	r, err := c.newRequest(ctx, adminUsersPath, http.MethodGet, nil)
 	if err != nil {
 		return nil, err
 	}
+
+	q := r.URL.Query()
+	if req.Page != nil {
+		q.Add("page", fmt.Sprintf("%d", *req.Page))
+	}
+	if req.PerPage != nil {
+		q.Add("per_page", fmt.Sprintf("%d", *req.PerPage))
+	}
+	r.URL.RawQuery = q.Encode()
 
 	resp, err := c.client.Do(r)
 	if err != nil {
