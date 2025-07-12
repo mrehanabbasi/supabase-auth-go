@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   auth:
     # Signups enabled, auto-confirm off
@@ -8,22 +7,22 @@ services:
     image: supabase/auth:v2.160.0
     restart: on-failure
     ports:
-      - "9999:9999"
+      - '9999:9999'
     environment:
-      GOTRUE_JWT_SECRET: "secret"
-      GOTRUE_DB_DRIVER: "postgres"
-      NAMESPACE: "auth"
-      DATABASE_URL: "postgres://supabase_auth_admin:root@postgres:5432/postgres"
-      API_EXTERNAL_URL: "http://localhost:9999"
-      GOTRUE_API_HOST: "0.0.0.0"
-      PORT: "9999"
-      GOTRUE_SITE_URL: "http://localhost:3000"
-      GOTRUE_RATE_LIMIT_EMAIL_SENT: "1000000"
-      GOTRUE_RATE_LIMIT_VERIFY: "1000000"
-      GOTRUE_RATE_LIMIT_TOKEN_REFRESH: "1000000"
-      GOTRUE_MFA_ENABLED: "true"
-      GOTRUE_MFA_RATE_LIMIT_CHALLENGE_AND_VERIFY: "1000000"
-      GOTRUE_SMTP_MAX_FREQUENCY: "1ns"
+      GOTRUE_JWT_SECRET: 'secret'
+      GOTRUE_DB_DRIVER: 'postgres'
+      NAMESPACE: 'auth'
+      DATABASE_URL: 'postgres://supabase_auth_admin:root@postgres:5432/postgres'
+      API_EXTERNAL_URL: 'http://localhost:9999'
+      GOTRUE_API_HOST: '0.0.0.0'
+      PORT: '9999'
+      GOTRUE_SITE_URL: 'http://localhost:3000'
+      GOTRUE_RATE_LIMIT_EMAIL_SENT: '1000000'
+      GOTRUE_RATE_LIMIT_VERIFY: '1000000'
+      GOTRUE_RATE_LIMIT_TOKEN_REFRESH: '1000000'
+      GOTRUE_MFA_ENABLED: 'true'
+      GOTRUE_MFA_RATE_LIMIT_CHALLENGE_AND_VERIFY: '1000000'
+      GOTRUE_SMTP_MAX_FREQUENCY: '1ns'
 
   auth_autoconfirm:
     # Signups enabled, auto-confirm on
@@ -33,29 +32,29 @@ services:
     image: supabase/auth:v2.160.0
     restart: on-failure
     ports:
-      - "9998:9998"
+      - '9998:9998'
     environment:
-      GOTRUE_JWT_SECRET: "secret"
-      GOTRUE_DB_DRIVER: "postgres"
-      NAMESPACE: "auth"
-      DATABASE_URL: "postgres://supabase_auth_admin:root@postgres:5432/postgres"
-      API_EXTERNAL_URL: "http://localhost:9998"
-      GOTRUE_API_HOST: "0.0.0.0"
-      PORT: "9998"
-      GOTRUE_SITE_URL: "http://localhost:3000"
-      GOTRUE_RATE_LIMIT_EMAIL_SENT: "1000000"
-      GOTRUE_RATE_LIMIT_VERIFY: "1000000"
-      GOTRUE_RATE_LIMIT_TOKEN_REFRESH: "1000000"
-      GOTRUE_MFA_ENABLED: "true"
-      GOTRUE_MFA_RATE_LIMIT_CHALLENGE_AND_VERIFY: "1000000"
-      GOTRUE_SMTP_MAX_FREQUENCY: "1ns"
-      GOTRUE_MAILER_AUTOCONFIRM: "true"
-      GOTRUE_SMS_AUTOCONFIRM: "true"
-      GOTRUE_EXTERNAL_PHONE_ENABLED: "true"
-      GOTRUE_EXTERNAL_GITHUB_ENABLED: "true"
-      GOTRUE_EXTERNAL_GITHUB_CLIENT_ID: "myappclientid"
-      GOTRUE_EXTERNAL_GITHUB_SECRET: "clientsecretvaluessssh"
-      GOTRUE_EXTERNAL_GITHUB_REDIRECT_URI: "http://localhost:3000/callback"
+      GOTRUE_JWT_SECRET: 'secret'
+      GOTRUE_DB_DRIVER: 'postgres'
+      NAMESPACE: 'auth'
+      DATABASE_URL: 'postgres://supabase_auth_admin:root@postgres:5432/postgres'
+      API_EXTERNAL_URL: 'http://localhost:9998'
+      GOTRUE_API_HOST: '0.0.0.0'
+      PORT: '9998'
+      GOTRUE_SITE_URL: 'http://localhost:3000'
+      GOTRUE_RATE_LIMIT_EMAIL_SENT: '1000000'
+      GOTRUE_RATE_LIMIT_VERIFY: '1000000'
+      GOTRUE_RATE_LIMIT_TOKEN_REFRESH: '1000000'
+      GOTRUE_MFA_ENABLED: 'true'
+      GOTRUE_MFA_RATE_LIMIT_CHALLENGE_AND_VERIFY: '1000000'
+      GOTRUE_SMTP_MAX_FREQUENCY: '1ns'
+      GOTRUE_MAILER_AUTOCONFIRM: 'true'
+      GOTRUE_SMS_AUTOCONFIRM: 'true'
+      GOTRUE_EXTERNAL_PHONE_ENABLED: 'true'
+      GOTRUE_EXTERNAL_GITHUB_ENABLED: 'true'
+      GOTRUE_EXTERNAL_GITHUB_CLIENT_ID: 'myappclientid'
+      GOTRUE_EXTERNAL_GITHUB_SECRET: 'clientsecretvaluessssh'
+      GOTRUE_EXTERNAL_GITHUB_REDIRECT_URI: 'http://localhost:3000/callback'
 
   auth_signup_disabled:
     # Signups disabled
@@ -65,24 +64,24 @@ services:
     image: supabase/auth:v2.160.0
     restart: on-failure
     ports:
-      - "9997:9997"
+      - '9997:9997'
     environment:
-      GOTRUE_JWT_SECRET: "secret"
-      GOTRUE_DB_DRIVER: "postgres"
-      NAMESPACE: "auth"
-      DATABASE_URL: "postgres://supabase_auth_admin:root@postgres:5432/postgres"
-      API_EXTERNAL_URL: "http://localhost:9997"
-      GOTRUE_API_HOST: "0.0.0.0"
-      PORT: "9997"
-      GOTRUE_SITE_URL: "http://localhost:3000"
-      GOTRUE_RATE_LIMIT_EMAIL_SENT: "1000000"
-      GOTRUE_RATE_LIMIT_VERIFY: "1000000"
-      GOTRUE_RATE_LIMIT_TOKEN_REFRESH: "1000000"
-      GOTRUE_MFA_RATE_LIMIT_CHALLENGE_AND_VERIFY: "1000000"
-      GOTRUE_SMTP_MAX_FREQUENCY: "1ns"
-      GOTRUE_DISABLE_SIGNUP: "true"
-      GOTRUE_EXTERNAL_PHONE_ENABLED: "false"
-      GOTRUE_EXTERNAL_EMAIL_ENABLED: "false"
+      GOTRUE_JWT_SECRET: 'secret'
+      GOTRUE_DB_DRIVER: 'postgres'
+      NAMESPACE: 'auth'
+      DATABASE_URL: 'postgres://supabase_auth_admin:root@postgres:5432/postgres'
+      API_EXTERNAL_URL: 'http://localhost:9997'
+      GOTRUE_API_HOST: '0.0.0.0'
+      PORT: '9997'
+      GOTRUE_SITE_URL: 'http://localhost:3000'
+      GOTRUE_RATE_LIMIT_EMAIL_SENT: '1000000'
+      GOTRUE_RATE_LIMIT_VERIFY: '1000000'
+      GOTRUE_RATE_LIMIT_TOKEN_REFRESH: '1000000'
+      GOTRUE_MFA_RATE_LIMIT_CHALLENGE_AND_VERIFY: '1000000'
+      GOTRUE_SMTP_MAX_FREQUENCY: '1ns'
+      GOTRUE_DISABLE_SIGNUP: 'true'
+      GOTRUE_EXTERNAL_PHONE_ENABLED: 'false'
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: 'false'
 
   postgres:
     build:
@@ -90,7 +89,7 @@ services:
       dockerfile: Dockerfile.postgres.dev
     container_name: auth_postgres
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=root

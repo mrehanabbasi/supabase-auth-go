@@ -3,8 +3,6 @@ package endpoints
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/mrehanabbasi/supabase-auth-go/types"
@@ -18,27 +16,23 @@ var healthPath = "/health"
 func (c *Client) HealthCheck(ctx context.Context) (*types.HealthCheckResponse, error) {
 	r, err := c.newRequest(ctx, healthPath, http.MethodGet, nil)
 	if err != nil {
-		return nil, err
+		return nil, newRequestCreationError(err)
 	}
 
 	resp, err := c.client.Do(r)
 	if err != nil {
-		return nil, err
+		return nil, newRequestDispatchError(err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		fullBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, fmt.Errorf("response status code %d", resp.StatusCode)
-		}
-		return nil, fmt.Errorf("response status code %d: %s", resp.StatusCode, fullBody)
+		return nil, handleErrorResponse(resp)
 	}
 
 	var res types.HealthCheckResponse
 	err = json.NewDecoder(resp.Body).Decode(&res)
 	if err != nil {
-		return nil, err
+		return nil, newResponseDecodingError(err)
 	}
 
 	return &res, nil

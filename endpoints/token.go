@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/mrehanabbasi/supabase-auth-go/types"
@@ -100,27 +98,24 @@ func (c *Client) Token(ctx context.Context, req types.TokenRequest) (*types.Toke
 		return nil, types.ErrInvalidTokenRequest
 	}
 
-	body, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	body := new(bytes.Buffer)
+	if err := json.NewEncoder(body).Encode(req); err != nil {
+		return nil, newRequestEncodingError(err)
 	}
-	r, err := c.newRequest(ctx, tokenPath+"?grant_type="+req.GrantType, http.MethodPost, bytes.NewBuffer(body))
+
+	r, err := c.newRequest(ctx, tokenPath+"?grant_type="+req.GrantType, http.MethodPost, body)
 	if err != nil {
-		return nil, err
+		return nil, newRequestCreationError(err)
 	}
 
 	resp, err := c.client.Do(r)
 	if err != nil {
-		return nil, err
+		return nil, newRequestDispatchError(err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		fullBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, fmt.Errorf("response status code %d", resp.StatusCode)
-		}
-		return nil, fmt.Errorf("response status code %d: %s", resp.StatusCode, fullBody)
+		return nil, handleErrorResponse(resp)
 	}
 
 	var res types.TokenResponse

@@ -100,33 +100,29 @@ func (c *Client) ChallengeFactor(ctx context.Context, req types.ChallengeFactorR
 func (c *Client) VerifyFactor(ctx context.Context, req types.VerifyFactorRequest) (*types.VerifyFactorResponse, error) {
 	url := fmt.Sprintf("%s/%s/verify", factorsPath, req.FactorID)
 
-	body, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	body := new(bytes.Buffer)
+	if err := json.NewEncoder(body).Encode(req); err != nil {
+		return nil, newRequestEncodingError(err)
 	}
 
-	r, err := c.newRequest(ctx, url, http.MethodPost, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, url, http.MethodPost, body)
 	if err != nil {
-		return nil, err
+		return nil, newRequestCreationError(err)
 	}
 
 	resp, err := c.client.Do(r)
 	if err != nil {
-		return nil, err
+		return nil, newRequestDispatchError(err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		fullBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, fmt.Errorf("response status code %d", resp.StatusCode)
-		}
-		return nil, fmt.Errorf("response status code %d: %s", resp.StatusCode, fullBody)
+		return nil, handleErrorResponse(resp)
 	}
 
 	var res types.VerifyFactorResponse
 	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, err
+		return nil, newResponseDecodingError(err)
 	}
 	return &res, nil
 }
@@ -139,26 +135,22 @@ func (c *Client) UnenrollFactor(ctx context.Context, req types.UnenrollFactorReq
 
 	r, err := c.newRequest(ctx, url, http.MethodDelete, nil)
 	if err != nil {
-		return nil, err
+		return nil, newRequestCreationError(err)
 	}
 
 	resp, err := c.client.Do(r)
 	if err != nil {
-		return nil, err
+		return nil, newRequestDispatchError(err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		fullBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, fmt.Errorf("response status code %d", resp.StatusCode)
-		}
-		return nil, fmt.Errorf("response status code %d: %s", resp.StatusCode, fullBody)
+		return nil, handleErrorResponse(resp)
 	}
 
 	var res types.UnenrollFactorResponse
 	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		return nil, err
+		return nil, newResponseDecodingError(err)
 	}
 	return &res, nil
 }

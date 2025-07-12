@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/mrehanabbasi/supabase-auth-go/types"
@@ -20,28 +18,24 @@ const recoverPath = "/recover"
 //
 // By default recovery links can only be sent once every 60 seconds.
 func (c *Client) Recover(ctx context.Context, req types.RecoverRequest) error {
-	body, err := json.Marshal(req)
-	if err != nil {
-		return err
+	body := new(bytes.Buffer)
+	if err := json.NewEncoder(body).Encode(req); err != nil {
+		return newRequestEncodingError(err)
 	}
 
-	r, err := c.newRequest(ctx, recoverPath, http.MethodPost, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, recoverPath, http.MethodPost, body)
 	if err != nil {
-		return err
+		return newRequestCreationError(err)
 	}
 
 	resp, err := c.client.Do(r)
 	if err != nil {
-		return err
+		return newRequestDispatchError(err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		fullBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return fmt.Errorf("response status code %d", resp.StatusCode)
-		}
-		return fmt.Errorf("response status code %d: %s", resp.StatusCode, fullBody)
+		return handleErrorResponse(resp)
 	}
 
 	return nil

@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -41,7 +39,7 @@ func (c *Client) Verify(ctx context.Context, req types.VerifyRequest) (*types.Ve
 
 	r, err := c.newRequest(ctx, verifyPath, http.MethodGet, nil)
 	if err != nil {
-		return nil, err
+		return nil, newRequestCreationError(err)
 	}
 
 	q := r.URL.Query()
@@ -55,21 +53,17 @@ func (c *Client) Verify(ctx context.Context, req types.VerifyRequest) (*types.Ve
 
 	resp, err := noRedirClient.Do(r)
 	if err != nil {
-		return nil, err
+		return nil, newRequestDispatchError(err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusSeeOther {
-		fullBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, fmt.Errorf("response status code %d", resp.StatusCode)
-		}
-		return nil, fmt.Errorf("response status code %d: %s", resp.StatusCode, fullBody)
+		return nil, handleErrorResponse(resp)
 	}
 
 	redirURL := resp.Header.Get("Location")
 	if redirURL == "" {
-		return nil, fmt.Errorf("no redirect URL found in response")
+		return nil, ErrRedirectURLNotInResponse
 	}
 	u, err := url.Parse(redirURL)
 	if err != nil {
@@ -124,34 +118,30 @@ func (c *Client) VerifyForUser(ctx context.Context, req types.VerifyForUserReque
 		return nil, types.ErrInvalidVerifyRequest
 	}
 
-	body, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	body := new(bytes.Buffer)
+	if err := json.NewEncoder(body).Encode(req); err != nil {
+		return nil, newRequestEncodingError(err)
 	}
 
-	r, err := c.newRequest(ctx, verifyPath, http.MethodPost, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, verifyPath, http.MethodPost, body)
 	if err != nil {
-		return nil, err
+		return nil, newRequestCreationError(err)
 	}
 
 	resp, err := c.client.Do(r)
 	if err != nil {
-		return nil, err
+		return nil, newRequestDispatchError(err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		fullBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, fmt.Errorf("response status code %d", resp.StatusCode)
-		}
-		return nil, fmt.Errorf("response status code %d: %s", resp.StatusCode, fullBody)
+		return nil, handleErrorResponse(resp)
 	}
 
 	var res types.VerifyForUserResponse
 	err = json.NewDecoder(resp.Body).Decode(&res)
 	if err != nil {
-		return nil, err
+		return nil, newResponseDecodingError(err)
 	}
 
 	return &res, nil

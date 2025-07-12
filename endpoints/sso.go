@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/mrehanabbasi/supabase-auth-go/types"
@@ -24,19 +22,19 @@ const ssoPath = "/sso"
 // on the request struct. In this case, the URL to redirect to will be returned
 // in the response.
 func (c *Client) SSO(ctx context.Context, req types.SSORequest) (*types.SSOResponse, error) {
-	body, err := json.Marshal(req)
-	if err != nil {
-		return nil, err
+	body := new(bytes.Buffer)
+	if err := json.NewEncoder(body).Encode(req); err != nil {
+		return nil, newRequestEncodingError(err)
 	}
 
-	r, err := c.newRequest(ctx, http.MethodPost, ssoPath, bytes.NewBuffer(body))
+	r, err := c.newRequest(ctx, http.MethodPost, ssoPath, body)
 	if err != nil {
-		return nil, err
+		return nil, newRequestCreationError(err)
 	}
 
 	resp, err := c.client.Do(r)
 	if err != nil {
-		return nil, err
+		return nil, newRequestDispatchError(err)
 	}
 
 	if !req.SkipHTTPRedirect {
@@ -49,11 +47,7 @@ func (c *Client) SSO(ctx context.Context, req types.SSORequest) (*types.SSORespo
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusSeeOther {
-		fullBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, fmt.Errorf("response status code %d", resp.StatusCode)
-		}
-		return nil, fmt.Errorf("response status code %d: %s", resp.StatusCode, fullBody)
+		return nil, handleErrorResponse(resp)
 	}
 
 	// If the client is not following redirects, we can unmarshal the response from
@@ -61,7 +55,7 @@ func (c *Client) SSO(ctx context.Context, req types.SSORequest) (*types.SSORespo
 	var res types.SSOResponse
 	err = json.NewDecoder(resp.Body).Decode(&res)
 	if err != nil {
-		return nil, err
+		return nil, newResponseDecodingError(err)
 	}
 	return &res, nil
 }
