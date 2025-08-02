@@ -8,14 +8,19 @@ import (
 )
 
 var (
-	errCodeUserAlreadyExists  = "user_already_exists"
-	errCodeInvalidCredentials = "invalid_credentials"
-	errCodeSessionNotFound    = "session_not_found"
-	errCodeBadJWT             = "bad_jwt"
-	errCodeEmailNotConfirmed  = "email_not_confirmed"
-	errCodeUnexpectedFailure  = "unexpected_failure"
+	errCodeUserAlreadyExists          = "user_already_exists"
+	errCodeInvalidCredentials         = "invalid_credentials"
+	errCodeSessionNotFound            = "session_not_found"
+	errCodeBadJWT                     = "bad_jwt"
+	errCodeEmailNotConfirmed          = "email_not_confirmed"
+	errCodeUnexpectedFailure          = "unexpected_failure"
+	errCodeEmailSendRateLimitExceeded = "over_email_send_rate_limit"
+	errCodeNoAuthorization            = "no_authorization"
+	errCodeNotAdmin                   = "not_admin"
+	errCodeValidationFailed           = "validation_failed"
 
 	errMsgErrorSendingConfirmationEmail = "Error sending confirmation email"
+	errMsguserIDMustBeUUID              = "user_id must be an UUID"
 
 	ErrUserAlreadyExists              = errors.New("user_already_exists")
 	ErrInvalidCredentials             = errors.New("invalid_credentials")
@@ -24,13 +29,20 @@ var (
 	ErrEmailNotConfirmed              = errors.New("email_not_confirmed")
 	ErrRedirectURLNotInResponse       = errors.New("no redirect URL found in response")
 	ErrFailedSendingConfirmationEmail = errors.New("failed_sending_confirmation_email")
+	ErrEmailSendLimitExceeded         = errors.New("email_send_limit_exceeded")
+	ErrNoAuthorization                = errors.New("no_authorization")
+	ErrNotAdmin                       = errors.New("not_admin")
+	ErrInvalidUserID                  = errors.New("invalid_user_id")
 
 	distinctErrors = map[string]error{
-		errCodeUserAlreadyExists:  ErrUserAlreadyExists,
-		errCodeInvalidCredentials: ErrInvalidCredentials,
-		errCodeSessionNotFound:    ErrSessionNotFound,
-		errCodeBadJWT:             ErrInvalidJWT,
-		errCodeEmailNotConfirmed:  ErrEmailNotConfirmed,
+		errCodeUserAlreadyExists:          ErrUserAlreadyExists,
+		errCodeInvalidCredentials:         ErrInvalidCredentials,
+		errCodeSessionNotFound:            ErrSessionNotFound,
+		errCodeBadJWT:                     ErrInvalidJWT,
+		errCodeEmailNotConfirmed:          ErrEmailNotConfirmed,
+		errCodeEmailSendRateLimitExceeded: ErrEmailSendLimitExceeded,
+		errCodeNoAuthorization:            ErrNoAuthorization,
+		errCodeNotAdmin:                   ErrNotAdmin,
 	}
 )
 
@@ -67,9 +79,16 @@ func (e ErrorResponse) Error() string {
 }
 
 func (e ErrorResponse) getDistinctError() error {
-	if e.ErrorCode != nil && *e.ErrorCode == errCodeUnexpectedFailure &&
-		e.Message != nil && *e.Message == errMsgErrorSendingConfirmationEmail {
-		return ErrFailedSendingConfirmationEmail
+	if e.ErrorCode == nil {
+		if *e.ErrorCode == errCodeUnexpectedFailure &&
+			e.Message != nil && *e.Message == errMsgErrorSendingConfirmationEmail {
+			return ErrFailedSendingConfirmationEmail
+		}
+
+		if *e.ErrorCode == errCodeValidationFailed &&
+			e.Message != nil && *e.Message == errMsguserIDMustBeUUID {
+			return ErrInvalidUserID
+		}
 	}
 
 	for k, v := range distinctErrors {
